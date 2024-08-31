@@ -8,7 +8,7 @@ const RecommendedGames = () => {
 
   useEffect(() => {
     const fetchApi = async () => {
-      const response = await fetch('/api/promotions'); 
+      const response = await fetch('promotions'); 
       const data = await response.json();
       setPromotions(data.slice(0, 6)); // Limitar a 6 itens
     };

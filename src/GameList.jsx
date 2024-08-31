@@ -11,10 +11,10 @@ const GameList = () => {
 
   useEffect(() => {
     const fetchApi = async () => {
-      const response = await fetch('/api/promotions'); 
+      const response = await fetch('promotions'); 
       const data = await response.json();
       setPromotions(data);
-      const response2 = await fetch('/api/promotions/categories'); 
+      const response2 = await fetch('promotions/categories'); 
       const data2 = await response2.json();
       setCategories(data2);
     };
@@ -36,6 +36,18 @@ const GameList = () => {
       <h2>Ache seu próximo game favorito!</h2>
 
       <div className="filter-menu">
+        <a href="#" className="">
+            <i className="icon-home"></i> Destaques
+        </a>
+        <a href="#" className="">
+            <i className="icon-star"></i> Recentes
+        </a>
+        <a href="#" className="">
+            <i className="icon-tag"></i> Em alta
+        </a>
+        <a href="#" className="">
+            <i className="icon-tag"></i> Menores Preços
+        </a>
         <button className="filter-button" onClick={toggleSortingMenu}>
           Ordenar
         </button>
@@ -46,21 +58,31 @@ const GameList = () => {
         {/* Dropdown de Ordenação */}
         {isSortingMenuOpen && (
           <div className="dropdown-menu show-dropdown">
-            <a href="#">Destaques</a>
-            <a href="#">Recentes</a>
-            <a href="#">Em alta</a>
-            <a href="#">Menores Preços</a>
+            <a href="#" className="dropdown-item">
+              <i className="icon-home"></i> Destaques
+            </a>
+            <a href="#" className="dropdown-item">
+              <i className="icon-home"></i> Recentes
+            </a>
+            <a href="#" className="dropdown-item">
+              <i className="icon-home"></i> Em alta
+            </a>
+            <a href="#" className="dropdown-item">
+              <i className="icon-home"></i> Menores Preços
+            </a>
           </div>
         )}
 
         {/* Dropdown de Filtros */}
         {isFilterMenuOpen && (
           <div className="dropdown-menu show-dropdown">
-            <a href="#">teste</a>
-           {categories.map((category) => ( 
-              <a href="#">{category.name}</a>
-            ))}            
+            {categories.map((category) => ( 
+              <a href="#" className="dropdown-item">
+                <i className="icon-home"></i> {category.name}
+              </a>
+            ))}
           </div>
+    
         )}
       </div>
 
