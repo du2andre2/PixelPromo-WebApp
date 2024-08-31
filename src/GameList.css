@@ -1,0 +1,175 @@
+/* Contêiner principal da lista */
+.list-container {
+  padding: 20px;
+  background-color: #121212;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* Título da seção */
+.list-container h2 {
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+/* Lista de jogos */
+.game-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Card de jogo */
+.game-card {
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 15px;
+  text-align: center;
+  flex: 1 1 calc(16.66% - 20px); /* Seis cards por linha */
+  max-width: calc(16.66% - 20px);
+  box-sizing: border-box;
+}
+
+/* Ajustar para 3 cards por linha */
+@media (max-width: 1024px) {
+  .game-card {
+    flex: 1 1 calc(33.33% - 20px);
+    max-width: calc(33.33% - 20px);
+  }
+}
+
+/* Ajustar para 2 cards por linha */
+@media (max-width: 768px) {
+  .game-card {
+    flex: 1 1 calc(50% - 20px);
+    max-width: calc(50% - 20px);
+  }
+}
+
+/* Ajustar para 1 card por linha */
+@media (max-width: 480px) {
+  .game-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+/* Estilo da imagem do jogo */
+.game-card-header .game-image {
+  width: 100%;
+  height: auto;
+}
+
+/* Seção de preço */
+.price-section {
+  margin: 10px 0;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.discounted-price {
+  color: #f88;
+  font-weight: bold;
+}
+
+.discount-badge {
+  background-color: #4CAF50;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+/* Título do jogo */
+.game-title {
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+/* Plataforma */
+.platform {
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+/* Rodapé do card */
+.game-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-avatar {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.interaction-icons button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+/* Estilizando o container do menu dentro do GameList */
+.filter-menu {
+  display: flex;
+  align-items: center;
+  background-color: #006400; /* Verde escuro */
+  padding: 10px 20px;
+  border-radius: 5px;
+  gap: 20px; /* Espaçamento entre os itens */
+  justify-content: flex-end; /* Alinhar itens à direita */
+  position: relative;
+  z-index: 1; /* Eleva o menu acima de outros elementos */
+}
+
+/* Estilo dos botões de filtro e ordenação */
+.filter-button {
+  background-color: #004d00;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Exibir apenas o botão de filtros em telas grandes */
+@media (min-width: 1024px) {
+  .filter-button:first-child {
+    display: none;
+  }
+}
+
+/* Dropdown menu dentro do GameList */
+.filter-menu .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #006400;
+  padding: 10px;
+  border-radius: 5px;
+  display: none;
+  z-index: 10; /* Eleva o dropdown acima de outros elementos */
+}
+
+.filter-menu .show-dropdown {
+  display: block;
+}
+
+.filter-button i {
+  font-size: 1.2em;
+}
+
+.filter-button:hover {
+  background-color: #003300;
+}
+   

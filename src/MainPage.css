@@ -1,0 +1,16 @@
+/* Estilo para o contêiner principal */
+.main-container {
+  background-color: #121212;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilo para a seção de jogos recomendados */
+.main-recommended-section {
+  padding: 20px;
+}
+
+/* Estilo para a seção de lista de jogos (por filtros, etc.) */
+.main-game-list-section {
+  padding: 20px;
+}
