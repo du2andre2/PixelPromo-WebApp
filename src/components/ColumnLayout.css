@@ -1,0 +1,7 @@
+.column-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap; /* Permite que os itens quebrem para a linha seguinte */
+  justify-content: center; /* Centraliza os itens horizontalmente */
+  gap: 15px; /* Espaço entre os itens */
+}

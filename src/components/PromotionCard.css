@@ -1,0 +1,116 @@
+.promotion-card {
+    background-color: #1f1f1f; /* Fundo escuro */
+    border-radius: 15px; /* Bordas arredondadas */
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    color: #ffffff; /* Cor do texto branco */
+    width: 100%; /* Largura agora é responsiva */
+    max-width: 280px; /* Largura máxima */
+    font-family: 'Arial', sans-serif; /* Fonte padrão */
+    box-sizing: border-box; /* Inclui padding e bordas na largura total */
+    position: relative; /* Adiciona posição relativa para o card */
+}
+
+.promotion-card:hover {
+    transform: scale(1.05);
+}
+
+.promotion-card-header {
+    padding: 5%;
+    position: relative; /* Mantém a posição relativa para o header */
+}
+
+.promotion-card-header img {
+    width: 100%;
+    height: 160px; /* Altura fixa para a imagem */
+    object-fit: cover;
+    border-radius: 12px; /* Bordas arredondadas na imagem */
+    margin-bottom: 8px; /* Espaço entre a imagem e o restante do card */
+}
+
+.discount-badge {
+    background-color: #4caf50; /* Cor verde para o desconto */
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8em; /* Reduzido para ajustar */
+    position: absolute; /* Alinha o badge dentro do card */
+    top: 10px; /* Ajuste para posicionar abaixo do topo do card */
+    right: 10px; /* Ajuste para posicionar à direita do card */
+}
+
+.promotion-card-body {
+    padding: 0 10px; /* Reduzi o padding lateral */
+    padding-bottom: 10px; /* Espaçamento inferior */
+}
+
+.price-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 8px; /* Espaço entre a seção de preços e o título */
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #b0b0b0; /* Cor do preço original */
+    font-size: 0.9em;
+    margin-bottom: 4px; /* Espaço entre o preço original e o preço com desconto */
+}
+
+.discounted-price {
+    color: #ff5f5f; /* Cor vermelha para o preço com desconto */
+    font-size: 1.2em; /* Reduzido para melhor caber */
+    font-weight: bold;
+}
+
+.game-title {
+    font-size: 1em;
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.platform {
+    font-size: 0.8em; /* Reduzi o tamanho da fonte */
+    color: #b0b0b0; /* Cor da plataforma */
+    margin-bottom: 10px; /* Reduzi o espaçamento abaixo da plataforma */
+}
+
+.promotion-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px; /* Ajustar padding */
+    background-color: transparent; /* Fundo transparente */
+    border-bottom-left-radius: 15px; /* Bordas arredondadas */
+    border-bottom-right-radius: 15px;
+}
+
+.user-avatar {
+    width: 30px; /* Reduzi o tamanho do avatar */
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #ffffff; /* Adicionar borda branca ao avatar */
+}
+
+.interaction-icons {
+    display: flex;
+    gap: 5px; /* Reduzi o espaço entre os ícones */
+    margin-left: auto; /* Garantir alinhamento à direita */
+}
+
+.interaction-icons button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #ff5f5f; /* Cor vermelha para o coração */
+    font-size: 1.2em; /* Reduzi o tamanho dos ícones */
+}
+
+.interaction-icons .like-icon {
+    color: #ffd700; /* Cor dourada para o like */
+}
+
+.interaction-icons button:hover {
+    opacity: 0.8;
+}

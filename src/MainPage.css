@@ -1,16 +1,40 @@
 /* Estilo para o contêiner principal */
 .main-container {
-  background-color: #121212;
+  background-color: #121212; /* Cor de fundo para todo o conteúdo */
   color: #ffffff;
   font-family: Arial, sans-serif;
+  max-width: 2000px; /* Define uma largura máxima para o conteúdo */
+  margin: 0 auto; /* Centraliza o conteúdo */
+  padding: 20px; /* Espaçamento interno */
+}
+
+/* Estilo para o fundo */
+body {
+  background-color: #121212; /* Cor de fundo para o body */
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilo para o menu */
+.menu-container {
+  width: 100%; /* Faz com que o menu ocupe toda a largura da tela */
+  background-color: #006400; /* Cor de fundo do menu */
+  padding: 10px 0; /* Espaçamento vertical no menu */
+}
+
+/* Estilo para o conteúdo do menu */
+.menu-content {
+  max-width: 2000px; /* Limita a largura do conteúdo do menu */
+  margin: 0 auto; /* Centraliza o conteúdo dentro do menu */
+  padding: 0 20px; /* Espaçamento lateral para o conteúdo do menu */
 }
 
 /* Estilo para a seção de jogos recomendados */
 .main-recommended-section {
-  padding: 20px;
+  padding: 20px 0; /* Espaçamento superior e inferior */
 }
 
 /* Estilo para a seção de lista de jogos (por filtros, etc.) */
 .main-game-list-section {
-  padding: 20px;
+  padding: 20px 0; /* Espaçamento superior e inferior */
 }

@@ -1,0 +1,109 @@
+.filter-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #006400;
+  padding: 10px 20px;
+  border-radius: 5px;
+  white-space: nowrap;
+  position: relative; /* Torna o contêiner um contexto de posicionamento para os dropdowns */
+}
+
+.filter-menu-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 1;
+}
+
+.filter-menu-item {
+  display: inline-flex;
+  align-items: center;
+  color: white;
+  padding: 0 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-grow: 0;
+}
+
+.filter-button {
+  background-color: #004d00;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap; /* Evita quebra de linha */
+  flex-shrink: 0;
+}
+
+.filter-button i {
+  margin-right: 5px;
+}
+
+.filter-button:hover {
+  background-color: #003300;
+}
+
+/* Configurações para telas grandes */
+@media (min-width: 768px) {
+  .filter-button.order-button {
+      display: none; /* Esconder o botão "Ordenar" em telas grandes */
+  }
+
+  .filter-menu-item {
+      display: inline-flex; /* Mostrar os links na tela grande */
+  }
+}
+
+/* Configurações para telas pequenas */
+@media (max-width: 768px) {
+  .filter-menu-links {
+      display: none; /* Esconder os links em telas pequenas */
+  }
+
+  .filter-buttons {
+      justify-content: flex-end; /* Alinhar os botões à direita em telas pequenas */
+      flex-grow: 1;
+  }
+
+  .filter-button.order-button {
+      display: inline-flex; /* Mostrar o botão "Ordenar" em telas pequenas */
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* Posiciona o dropdown logo abaixo do botão de filtro ou ordenação */
+  right: 0; /* Alinha o dropdown à direita */
+  background-color: #004d00;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 200px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 5px; /* Pequeno espaço entre o botão e o dropdown */
+}
+
+.dropdown-item {
+  color: white;
+  padding: 10px;
+  text-decoration: none;
+  border-bottom: 1px solid #003300;
+  width: 90%;
+}
+
+.dropdown-item:hover {
+  background-color: #003300;
+}
+

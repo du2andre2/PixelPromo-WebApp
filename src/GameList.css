@@ -56,9 +56,20 @@
 }
 
 /* Estilo da imagem do jogo */
+.game-card-header {
+  width: 100%;
+  height: 200px; /* Aumentando a altura do contêiner */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
 .game-card-header .game-image {
   width: 100%;
   height: auto;
+  object-fit: contain; /* Mantém a proporção da imagem */
 }
 
 /* Seção de preço */
@@ -172,4 +183,3 @@
 .filter-button:hover {
   background-color: #003300;
 }
-   

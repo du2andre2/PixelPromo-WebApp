@@ -1,0 +1,21 @@
+/* Contêiner principal */
+.recommended-container {
+  padding: 20px;
+  background-color: #121212;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* Título da seção */
+.recommended-container h2 {
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+/* Lista de jogos recomendados */
+.recommended-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
