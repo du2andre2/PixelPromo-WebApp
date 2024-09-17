@@ -1,93 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import './GameList.css';
-import GridLayout from './GridLayout'; // Importa o componente de grade
+import GridLayout from './GridLayout';
 import PromotionCard from './PromotionCard';
-import FilterMenu from './FilterMenu'; // Importa o componente de filtro
+import FilterMenu from './FilterMenu';
 
-const GameList = () => {
+const GameList = ({ searchQuery }) => {
   const [promotions, setPromotions] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [userProfiles, setUserProfiles] = useState({});
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch promotions data
-    const fetchPromotions = async () => {
-      const response = await fetch('/promotions');
-      const data = await response.json();
-      setPromotions(data);
-    };
-
-    // Fetch categories data
     const fetchCategories = async () => {
-      const response = await fetch('promotions/categories');
+      const response = await fetch('categories');
       const data = await response.json();
       setCategories(data);
     };
-
-    fetchPromotions();
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    // Fetch user data for each promotion's userId
-    const fetchUserProfiles = async () => {
-      const profiles = {};
-      try {
-        await Promise.all(
-          promotions.map(async (promotion) => {
-            const response = await fetch(`/users/${promotion.userId}`);
-            
-            // Verifica se a resposta foi bem-sucedida
-            if (!response.ok) {
-              throw new Error(`Failed to fetch user profile for userId: ${promotion.userId}`);
-            }
-            
-            const userProfile = await response.json();
-            
-            // Verifica se o JSON é válido
-            if (userProfile && Object.keys(userProfile).length > 0) {
-              profiles[promotion.userId] = userProfile;
-            } else {
-              throw new Error(`Invalid JSON for userId: ${promotion.userId}`);
-            }
-          })
-        );
-        setUserProfiles(profiles);
-      } catch (error) {
-        console.error("Error fetching user profiles:", error.message);
-      }
-    };
-  
-    if (promotions.length > 0) {
-      fetchUserProfiles();
+  // Função para buscar promoções com base em categorias e termo de busca
+  const fetchPromotions = async (categories, search) => {
+    setLoading(true); // Inicia o loading
+    let url = '/promotions';
+    
+    const queryParams = [];
+
+    if (categories.length > 0) {
+      categories.forEach((category) => {
+        queryParams.push(`category=${category}`);
+      });
     }
-  }, [promotions]);
+    if (search) {
+      queryParams.push(`search=${search}`);
+    }
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`;
+    }
+
+    const response = await fetch(url);
+    if (response.status === 204) {
+      setPromotions([]); // Lista vazia
+    } else {
+      const data = await response.json();
+      setPromotions(data);
+    }
+    setLoading(false); // Finaliza o loading
+  };
+
+  useEffect(() => {
+    // Busca promoções sempre que as categorias ou o termo de busca mudarem
+    fetchPromotions(selectedCategories, searchQuery);
+  }, [selectedCategories, searchQuery]);
+
+  const handleApplyFilters = (categories) => {
+    setSelectedCategories(categories); // Atualiza categorias selecionadas
+  };
 
   return (
     <div className="list-container">
       <h2>Ache seu próximo game favorito!</h2>
 
-      {/* Usa o componente FilterMenu */}
-      <FilterMenu categories={categories} />
+      <FilterMenu categories={categories} onApplyFilters={handleApplyFilters} />
 
       <div className="game-list">
-        <GridLayout>  {/* Usa o componente GridLayout */}
-          {promotions.map((promotion) => (
-            <PromotionCard
-              key={promotion.id}  
-              id={promotion.id}
-              title={promotion.title}
-              originalPrice={promotion.originalPrice}
-              discountedPrice={promotion.discountedPrice}
-              discount={promotion.discountBadge}
-              platform={promotion.platform}
-              image={promotion.imageUrl}
-              likes={promotion.likes}
-              favorites={promotion.favorites}
-              userAvatar={userProfiles[promotion.userId]?.pictureUrl}
-            />
-          ))}
-        </GridLayout>
+        {loading ? (
+          <p>Carregando...</p>
+        ) : promotions.length > 0 ? (
+          <GridLayout>
+            {promotions.map((promotion) => (
+              <PromotionCard
+                key={promotion.id}
+                id={promotion.id}
+                title={promotion.title}
+                originalPrice={promotion.originalPrice}
+                discountedPrice={promotion.discountedPrice}
+                discount={promotion.discountBadge}
+                platform={promotion.platform}
+                image={promotion.imageUrl}
+                likes={promotion.likes}
+                favorites={promotion.favorites}
+                userAvatar={promotion.userAvatar}
+              />
+            ))}
+          </GridLayout>
+        ) : (
+          <p>Nenhuma promoção encontrada.</p>
+        )}
       </div>
     </div>
   );

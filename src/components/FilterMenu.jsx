@@ -1,71 +1,66 @@
 import React, { useState } from 'react';
-import './FilterMenu.css'; // Certifique-se de criar e configurar o CSS correspondente
+import './FilterMenu.css';
 
-const FilterMenu = ({ categories }) => {
-  const [isSortingMenuOpen, setIsSortingMenuOpen] = useState(false);
+const FilterMenu = ({ categories, onApplyFilters }) => {
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-
-  const toggleSortingMenu = () => {
-    setIsSortingMenuOpen(!isSortingMenuOpen);
-    setIsFilterMenuOpen(false);
-  };
 
   const toggleFilterMenu = () => {
     setIsFilterMenuOpen(!isFilterMenuOpen);
-    setIsSortingMenuOpen(false);
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prevCategories) =>
+      prevCategories.includes(category)
+        ? prevCategories.filter((c) => c !== category)
+        : [...prevCategories, category]
+    );
+  };
+
+  const applyFilters = () => {
+    onApplyFilters(selectedCategories);
+  };
+
+  const resetFilters = () => {
+    setSelectedCategories([]);
+    onApplyFilters([]); // Chama a função para aplicar os filtros com categorias vazias
   };
 
   return (
     <div className="filter-menu">
-      <div className="filter-menu-links">
-        <a href="#" className="filter-menu-item">
-          Destaques
-        </a>
-        <a href="#" className="filter-menu-item">
-          Recentes
-        </a>
-        <a href="#" className="filter-menu-item">
-          Em alta
-        </a>
-        <a href="#" className="filter-menu-item">
-          Menores Preços
-        </a>
-      </div>
       <div className="filter-buttons">
-        <button className="filter-button order-button" onClick={toggleSortingMenu}>
-          Ordenar
-        </button>
         <button className="filter-button" onClick={toggleFilterMenu}>
           Filtros
         </button>
       </div>
-
-      {/* Dropdown de Ordenação */}
-      {isSortingMenuOpen && (
-        <div className="dropdown-menu show-dropdown">
-          <a href="#" className="dropdown-item">
-            Destaques
-          </a>
-          <a href="#" className="dropdown-item">
-            Recentes
-          </a>
-          <a href="#" className="dropdown-item">
-            Em alta
-          </a>
-          <a href="#" className="dropdown-item">
-            Menores Preços
-          </a>
-        </div>
-      )}
-
-      {/* Dropdown de Filtros */}
+  
       {isFilterMenuOpen && (
         <div className="dropdown-menu show-dropdown">
-          {categories.map((category) => (
-            <a href="#" key={category.id} className="dropdown-item">
+          <h3>Filtrar por Categoria</h3>
+          {categories.map((category, index) => (
+            <label key={index} className="checkbox-item">
+              <input
+                type="checkbox"
+                value={category.name}
+                onChange={() => handleCategoryChange(category.name)}
+                checked={selectedCategories.includes(category.name)}
+              />
               {category.name}
-            </a>
+            </label>
           ))}
+  
+          <div className="filter-actions">
+            <button 
+              className="apply-filters" 
+              onClick={applyFilters}
+              disabled={selectedCategories.length === 0}  // Desabilitar se nenhum filtro for selecionado
+            >
+              Aplicar Filtros
+            </button>
+            <button className="reset-filters" onClick={resetFilters}>
+              Limpar Filtros
+            </button>
+          </div>
         </div>
       )}
     </div>

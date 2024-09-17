@@ -9,101 +9,83 @@
   position: relative; /* Torna o contêiner um contexto de posicionamento para os dropdowns */
 }
 
-.filter-menu-links {
+.filter-buttons {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end; /* Alinha o botão de filtro à direita */
   flex-grow: 1;
 }
 
-.filter-menu-item {
-  display: inline-flex;
-  align-items: center;
-  color: white;
-  padding: 0 10px;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.filter-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  flex-grow: 0;
-}
-
 .filter-button {
-  background-color: #004d00;
-  border: none;
-  color: white;
   padding: 10px 20px;
+  background-color: #004d00;
+  color: white;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  white-space: nowrap; /* Evita quebra de linha */
-  flex-shrink: 0;
-}
-
-.filter-button i {
-  margin-right: 5px;
 }
 
 .filter-button:hover {
   background-color: #003300;
 }
 
-/* Configurações para telas grandes */
-@media (min-width: 768px) {
-  .filter-button.order-button {
-      display: none; /* Esconder o botão "Ordenar" em telas grandes */
-  }
-
-  .filter-menu-item {
-      display: inline-flex; /* Mostrar os links na tela grande */
-  }
-}
-
-/* Configurações para telas pequenas */
-@media (max-width: 768px) {
-  .filter-menu-links {
-      display: none; /* Esconder os links em telas pequenas */
-  }
-
-  .filter-buttons {
-      justify-content: flex-end; /* Alinhar os botões à direita em telas pequenas */
-      flex-grow: 1;
-  }
-
-  .filter-button.order-button {
-      display: inline-flex; /* Mostrar o botão "Ordenar" em telas pequenas */
-  }
-}
-
 .dropdown-menu {
-  position: absolute;
-  top: 100%; /* Posiciona o dropdown logo abaixo do botão de filtro ou ordenação */
-  right: 0; /* Alinha o dropdown à direita */
-  background-color: #004d00;
-  border-radius: 5px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  width: 200px;
-  padding: 10px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin-top: 5px; /* Pequeno espaço entre o botão e o dropdown */
+  background-color: #1f1f1f;
+  padding: 20px;
+  border-radius: 5px;
+  width: 250px; /* Aumentado para dar mais espaço */
+  position: absolute; /* Posiciona o dropdown abaixo do botão */
+  top: 100%; /* Coloca o dropdown logo abaixo do botão de filtro */
+  right: 0;
+  flex-grow: 1;
+  z-index: 1000; /* Garante que o dropdown ficará acima de outros elementos */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Adiciona sombra para melhorar a visibilidade */
+  margin-top: 10px; /* Espaçamento entre o botão e o dropdown */
 }
 
-.dropdown-item {
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: white; /* Cor do texto para melhor contraste */
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin-right: 10px; /* Espaçamento entre o checkbox e o texto */
+}
+
+.apply-filters {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #004d00;
   color: white;
-  padding: 10px;
-  text-decoration: none;
-  border-bottom: 1px solid #003300;
-  width: 90%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.dropdown-item:hover {
+.apply-filters:hover {
   background-color: #003300;
 }
 
+.reset-filters {
+  background-color: #ff5f5f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.reset-filters:hover {
+  background-color: #ff3333;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  margin-top: 20px;
+}

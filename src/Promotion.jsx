@@ -16,7 +16,6 @@ const Promotion = () => {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        // Fetch promotion info
         const promotionResponse = await fetch(`/promotions/${id}`);
         if (!promotionResponse.ok) {
           throw new Error(`Failed to fetch promotion data: ${promotionResponse.statusText}`);
@@ -24,7 +23,6 @@ const Promotion = () => {
         const promotionData = await promotionResponse.json();
         setPromotion(promotionData);
 
-        // Fetch other offers
         const otherPromotionsResponse = await fetch(`/promotions`);
         if (!otherPromotionsResponse.ok) {
           throw new Error(`Failed to fetch other promotions: ${otherPromotionsResponse.statusText}`);
@@ -32,7 +30,6 @@ const Promotion = () => {
         const otherPromotionsData = await otherPromotionsResponse.json();
         setOtherPromotions(otherPromotionsData.slice(0, 4));
 
-        // Fetch user profiles for each promotion
         const profiles = {};
         await Promise.all(
           otherPromotionsData.map(async (promo) => {
@@ -69,7 +66,7 @@ const Promotion = () => {
       {/* Menu com largura total */}
       <div className="menu-container">
         <div className="menu-content">
-          <MenuBar />
+          <MenuBar showSearch={false} /> {/* Desabilita a barra de pesquisa */}
         </div>
       </div>
       <div className="main-container">
@@ -77,7 +74,7 @@ const Promotion = () => {
           <div className="main-content">
             <GameInfo 
               promotion={promotion} 
-              userProfile={userProfiles[promotion.userId]} // Passa os dados do usuário para o componente GameInfo
+              userProfile={userProfiles[promotion.userId]} 
             />
             <div className="comments-section">
               <h2>123 Comentários</h2>
