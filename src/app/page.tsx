@@ -1,9 +1,14 @@
-import LoginForm from "./components/formLogin";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
-export default function Home() {
-  return (
-    <div>
-      <LoginForm />
-    </div>
-  );
+export default async function Home() {
+    const session = await getServerSession();
+  
+    if (!session) {
+      redirect("/signin");
+    }
+    else{
+      redirect("/home");
+    }
+
 }

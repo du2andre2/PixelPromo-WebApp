@@ -1,4 +1,5 @@
 import { api } from "@/lib/axios";
+import { cookies } from "next/headers";
 
 export interface UserProps {
     id?: string;
@@ -13,9 +14,9 @@ export interface UserProps {
 }
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
+    const token = cookies().get("token");
     return {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token?.value}`,
     };
 };
 
@@ -30,7 +31,7 @@ export async function createUser({ name, email, password }: UserProps) {
     return response.data;
 }
 
-export async function getUserById({ id }: UserProps) {
+export async function getUserById(id: string) {
     try {
         const response = await api.get<UserProps>(`/users/${id}`, {
             headers: getAuthHeaders(),

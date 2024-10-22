@@ -13,12 +13,11 @@ export default async function Page() {
   return (
     <div>
       <div>Olá, {session?.user?.name}</div>
-      <div>promoções</div>
-      <div>
-        <Promotions />
-      </div>
       <div>
         <LogoutButton />
+      </div>
+      <div>
+        <Promotions />
       </div>
     </div>
   );

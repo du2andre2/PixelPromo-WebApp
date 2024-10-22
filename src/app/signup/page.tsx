@@ -1,4 +1,4 @@
-import SignupForm from "@/app/components/formCadastro";
+import SignupForm from "@/app/signup/signupForm";
 
 export default function Signup() {
   return (
