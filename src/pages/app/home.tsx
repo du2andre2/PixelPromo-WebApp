@@ -8,11 +8,9 @@ import { z } from 'zod'
 
 import { getCategories } from '@/api/get-categories'
 import GameCard from '@/components/GameCard'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -32,7 +30,7 @@ export default function Home() {
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
-  const { handleSubmit, register } = useForm<CategoriesFormData>({
+  const { handleSubmit } = useForm<CategoriesFormData>({
     resolver: zodResolver(categoriesFormSchema),
     defaultValues: {
       categories: [],
@@ -83,35 +81,30 @@ export default function Home() {
                 <Filter size={20} />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Categorias</DropdownMenuLabel>
+            <DropdownMenuContent className="p-4">
+              <DropdownMenuLabel className="pb-2 text-lg font-semibold">
+                Categorias
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <form onSubmit={handleSubmit(handleSelectCategories)}>
                 {categoriesQuery &&
                   categoriesQuery.map((category) => (
-                    <div key={category.name}>
-                      <DropdownMenuItem>
-                        <label className="w-16">
-                          <Checkbox
-                            {...register('categories')}
-                            value={category.name}
-                            checked={selectedCategories.includes(category.name)}
-                            onCheckedChange={() =>
-                              handleCheckboxChange(category.name)
-                            }
-                          />
-                          {category.name}
-                        </label>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
+                    <div
+                      key={category.name}
+                      className="flex items-center gap-2 px-2 py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        value={category.name}
+                        checked={selectedCategories.includes(category.name)}
+                        onChange={() => handleCheckboxChange(category.name)}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      <label className="text-sm text-gray-800">
+                        {category.name}
+                      </label>
                     </div>
                   ))}
-                <button
-                  type="submit"
-                  className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
-                >
-                  Aplicar
-                </button>
               </form>
             </DropdownMenuContent>
           </DropdownMenu>
