@@ -1,12 +1,10 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { Filter } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import { getCategories } from '@/api/get-categories'
+import { getPromotions } from '@/api/get-promotions'
 import GameCard from '@/components/GameCard'
 import {
   DropdownMenu,
@@ -16,32 +14,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-const categoriesFormSchema = z.object({
-  categories: z.array(z.string()).nonempty('Selecione uma categoria'),
-})
-
-type CategoriesFormData = z.infer<typeof categoriesFormSchema>
-
 export default function Home() {
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+
   const { data: categoriesQuery } = useQuery({
     queryKey: ['categoriesQuery'],
     queryFn: getCategories,
   })
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-
-  const { handleSubmit } = useForm<CategoriesFormData>({
-    resolver: zodResolver(categoriesFormSchema),
-    defaultValues: {
-      categories: [],
-    },
+  const promotionsQuery = useQuery({
+    queryKey: ['promotionsQuery', selectedCategories],
+    queryFn: () =>
+      getPromotions({
+        userId: '1',
+        categories:
+          selectedCategories.length > 0 ? selectedCategories : undefined,
+      }),
   })
-
-  useEffect(() => {
-    if (selectedCategories.length > 0) {
-      console.log('Categorias selecionadas:', selectedCategories)
-    }
-  }, [selectedCategories])
 
   const handleCheckboxChange = (category: string) => {
     setSelectedCategories((prev: string[]) => {
@@ -53,22 +42,18 @@ export default function Home() {
     })
   }
 
-  function handleSelectCategories() {
-    console.log('Categorias selecionadas:', selectedCategories)
-  }
-
   return (
     <>
       <Helmet title="Home" />
       <div className="flex w-app flex-col space-y-4 text-slate-200">
         <h1 className="mt-4 text-3xl font-bold">Jogos recomendados</h1>
         <div className="flex justify-between">
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
+          {promotionsQuery.data &&
+            promotionsQuery.data
+              .slice(0, 6)
+              .map((promotion) => (
+                <GameCard key={promotion.id} promotion={promotion} />
+              ))}
         </div>
         <h1 className="mt-6 text-3xl font-bold">
           Ache seu próximo game favorito!
@@ -86,42 +71,32 @@ export default function Home() {
                 Categorias
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <form onSubmit={handleSubmit(handleSelectCategories)}>
-                {categoriesQuery &&
-                  categoriesQuery.map((category) => (
-                    <div
-                      key={category.name}
-                      className="flex items-center gap-2 px-2 py-1"
-                    >
-                      <input
-                        type="checkbox"
-                        value={category.name}
-                        checked={selectedCategories.includes(category.name)}
-                        onChange={() => handleCheckboxChange(category.name)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      <label className="text-sm text-gray-800">
-                        {category.name}
-                      </label>
-                    </div>
-                  ))}
-              </form>
+              {categoriesQuery &&
+                categoriesQuery.map((category) => (
+                  <div
+                    key={category.name}
+                    className="flex items-center gap-2 px-2 py-1"
+                  >
+                    <input
+                      type="checkbox"
+                      value={category.name}
+                      checked={selectedCategories.includes(category.name)}
+                      onChange={() => handleCheckboxChange(category.name)}
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                    />
+                    <label className="text-sm text-gray-800">
+                      {category.name}
+                    </label>
+                  </div>
+                ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="grid grid-cols-5 gap-y-2 lg:grid-cols-6">
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
+        <div className="grid grid-cols-5 gap-x-3 gap-y-2 lg:grid-cols-6">
+          {promotionsQuery.data &&
+            promotionsQuery.data.map((promotion) => (
+              <GameCard key={promotion.id} promotion={promotion} />
+            ))}
         </div>
       </div>
     </>
