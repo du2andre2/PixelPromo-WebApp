@@ -271,5 +271,87 @@
             "favorite": 1,
             "like": 175
         }
+    ],
+    "comments": [
+        {
+            "id": "1",
+            "promotionId": "1",
+            "ownerUserId": "2",
+            "userId": "1",
+            "comment": "Já aproveitei a promoção! Jogo excelente, pena que o Robben é muito apelão!",
+            "interactionType": "comment",
+            "createdAt": "2024-10-24T13:01:53.2405119-03:00"
+        },
+        {
+            "id": "2",
+            "promotionId": "1",
+            "ownerUserId": "3",
+            "userId": "2",
+            "comment": "Espera só você ver a carta do Endrick. Quando ela chegar, o game muda todo",
+            "interactionType": "comment",
+            "createdAt": "2024-10-24T13:01:53.2405119-03:00"
+        },
+        {
+            "id": "3",
+            "promotionId": "1",
+            "ownerUserId": "4",
+            "userId": "3",
+            "comment": "Messi mesmo novo é o GOAT 🐐",
+            "interactionType": "comment",
+            "createdAt": "2024-10-24T13:01:53.2405119-03:00"
+        },
+        {
+            "id": "4",
+            "promotionId": "1",
+            "ownerUserId": "5",
+            "userId": "4",
+            "comment": "Como tem gente ruim nesse jogo. Os que são ‘bons’ abusam de bugs. Não recomendo!",
+            "interactionType": "comment",
+            "createdAt": "2024-10-24T13:01:53.2405119-03:00"
+        },
+        {
+            "id": "5",
+            "promotionId": "1",
+            "ownerUserId": "6",
+            "userId": "5",
+            "comment": "Que jogo estranho. Nunca será o 2010.",
+            "interactionType": "comment",
+            "createdAt": "2024-10-24T13:01:53.2405119-03:00"
+        },
+        {
+            "id": "6",
+            "promotionId": "1",
+            "ownerUserId": "7",
+            "userId": "6",
+            "comment": "100 horas de gameplay pra tirar o Pelé. Valeu a pena!",
+            "interactionType": "comment",
+            "createdAt": "2024-10-24T13:01:53.2405119-03:00"
+        }
+    ],
+    "user": [
+        {
+            "id": "1",
+            "name": "José mourinho"
+        },
+        {
+            "id": "2",
+            "name": "Abel Ferreira"
+        },
+        {
+            "id": "3",
+            "name": "Simone Simaria"
+        },
+        {
+            "id": "4",
+            "name": "Suelen Cristina"
+        },
+        {
+            "id": "5",
+            "name": "Letícia Mariana"
+        },
+        {
+            "id": "6",
+            "name": "Bruno Marques"
+        } 
     ]
 }

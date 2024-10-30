@@ -5,7 +5,7 @@ export interface Categories {
   id: string
 }
 
-export async function getCategories() {
+export async function fetchCategories() {
   const response = await api.get<Categories[]>('/categories')
 
   return response.data

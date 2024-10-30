@@ -1,9 +1,8 @@
 import { api } from '@/lib/axios'
 
-import type { Interactions } from './get-interactions'
+import type { Interactions } from './get-interaction'
 
 interface GetPromotionsQuery {
-  userId?: string | null
   categories?: string[]
 }
 
@@ -23,13 +22,9 @@ export interface Promotions {
   likes: number
 }
 
-export async function getPromotions({
-  userId,
-  categories,
-}: GetPromotionsQuery) {
+export async function fetchPromotions({ categories }: GetPromotionsQuery) {
   const response = await api.get<Promotions[]>('/promotions', {
     params: {
-      userId,
       categories: categories ? categories.join(',') : undefined,
     },
   })

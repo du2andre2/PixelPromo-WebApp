@@ -35,23 +35,26 @@ export default function GameCard({ promotion }: PromotionProps) {
 
   function handleLikePromotion() {
     setLiked(true)
-    setLikesAmount(likesAmount + 1) // Incrementa a quantidade de likes
+    setLikesAmount(likesAmount + 1)
   }
 
   function handleUnlikePromotion() {
     setLiked(false)
-    setLikesAmount(likesAmount - 1) // Decrementa a quantidade de likes
+    setLikesAmount(likesAmount - 1)
   }
 
   return (
     <div className="flex h-52 w-52 flex-col rounded-sm border border-gray-700 bg-gray-800">
-      <div className="flex flex-1 items-center justify-center gap-2 border-b border-gray-700">
+      <Link
+        className="flex flex-1 items-center justify-center gap-2 border-b border-gray-700"
+        to={`/promotion/${promotion.id}`}
+      >
         <img
           src={promotion.imageUrl}
           alt="Imagem do jogo"
           className="w-42 h-20 object-cover"
         />
-      </div>
+      </Link>
 
       <div className="mx-2 my-1 flex flex-1 flex-col">
         <div className="flex basis-4/5">

@@ -3,8 +3,8 @@ import { Filter } from 'lucide-react'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 
-import { getCategories } from '@/api/get-categories'
-import { getPromotions } from '@/api/get-promotions'
+import { fetchCategories } from '@/api/fetch-categories'
+import { fetchPromotions } from '@/api/fetch-promotions'
 import GameCard from '@/components/GameCard'
 import {
   DropdownMenu,
@@ -19,14 +19,13 @@ export default function Home() {
 
   const { data: categoriesQuery } = useQuery({
     queryKey: ['categoriesQuery'],
-    queryFn: getCategories,
+    queryFn: fetchCategories,
   })
 
   const promotionsQuery = useQuery({
     queryKey: ['promotionsQuery', selectedCategories],
     queryFn: () =>
-      getPromotions({
-        userId: '1',
+      fetchPromotions({
         categories:
           selectedCategories.length > 0 ? selectedCategories : undefined,
       }),
