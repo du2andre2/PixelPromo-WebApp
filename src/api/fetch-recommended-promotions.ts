@@ -3,25 +3,10 @@ import { api } from '@/lib/axios'
 import type { Interactions } from './get-interaction'
 import type { Promotion } from './get-promotion'
 
-interface GetPromotionsQuery {
-  categories?: string[]
-  promotionName?: string
-}
+export async function fetchRecommendedPromotions() {
+  // const response = await api.get<Promotions[]>('/recommended-promotions')
 
-export async function fetchPromotions({
-  categories,
-  promotionName,
-}: GetPromotionsQuery) {
-  // const response = await api.get<Promotions[]>('/promotions', {
-  //   params: {
-  //     categories: categories ? categories.join(',') : undefined,
-  //     title: promotionName,
-  //   },
-  // })
-
-  const response = await api.get<Promotion[]>(
-    `/promotions?title=${promotionName || ''}`,
-  )
+  const response = await api.get<Promotion[]>('/recommended-promotions')
 
   //   const promotions = await Promise.all(
   //     response.data.map(async (promotion) => {
@@ -38,7 +23,7 @@ export async function fetchPromotions({
   //     }),
   //   )
 
-  const promotions = await Promise.all(
+  const recommendedPromotions = await Promise.all(
     response.data.map(async (promotion) => {
       const promotionId = promotion.id
       const likesResponse = await api.get<Interactions>(
@@ -52,5 +37,5 @@ export async function fetchPromotions({
     }),
   )
 
-  return promotions
+  return recommendedPromotions
 }

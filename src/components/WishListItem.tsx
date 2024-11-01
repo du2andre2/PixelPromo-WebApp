@@ -9,7 +9,7 @@ interface PromotionProps {
   promotion: Promotion
 }
 
-export default function GameCard({ promotion }: PromotionProps) {
+export default function WishListItem({ promotion }: PromotionProps) {
   const [liked, setLiked] = useState<boolean>(false)
   const [favorited, setFavorited] = useState<boolean>(false)
   const [likesAmount, setLikesAmount] = useState<number>(promotion.likes)
@@ -33,19 +33,19 @@ export default function GameCard({ promotion }: PromotionProps) {
   }
 
   return (
-    <div className="flex h-52 w-52 flex-col rounded-sm border border-gray-700 bg-gray-800">
+    <div className="flex h-32 w-full justify-between rounded-sm border border-gray-700 bg-gray-800">
       <Link
-        className="flex flex-1 items-center justify-center gap-2 border-b border-gray-700"
+        className="flex w-40 items-center justify-center gap-2 border-b border-gray-700 px-4"
         to={`/promotion/${promotion.id}`}
       >
         <img
           src={promotion.imageUrl}
           alt="Imagem do jogo"
-          className="w-42 h-20 object-cover"
+          className="h-24 object-cover"
         />
       </Link>
 
-      <div className="mx-2 my-1 flex flex-1 flex-col">
+      <div className="mx-2 my-1 flex w-48 flex-col">
         <div className="flex basis-4/5">
           <div className="mb-1 flex flex-1 flex-col gap-0">
             <div className="flex basis-3/4">

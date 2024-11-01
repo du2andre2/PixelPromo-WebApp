@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { Filter } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { useSearchParams } from 'react-router-dom'
 
 import { fetchCategories } from '@/api/fetch-categories'
 import { fetchPromotions } from '@/api/fetch-promotions'
+import { fetchRecommendedPromotions } from '@/api/fetch-recommended-promotions'
 import GameCard from '@/components/GameCard'
 import {
   DropdownMenu,
@@ -16,28 +18,49 @@ import {
 
 export default function Home() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [searchParams, setSearchParams] = useSearchParams()
+  const promotionName = searchParams.get('promotionName') || ''
 
   const { data: categoriesQuery } = useQuery({
     queryKey: ['categoriesQuery'],
     queryFn: fetchCategories,
   })
 
+  const { data: recommededPromotions } = useQuery({
+    queryKey: ['recommededPromotions'],
+    queryFn: fetchRecommendedPromotions,
+  })
+
   const promotionsQuery = useQuery({
-    queryKey: ['promotionsQuery', selectedCategories],
+    queryKey: ['promotionsQuery', selectedCategories, promotionName],
     queryFn: () =>
       fetchPromotions({
         categories:
           selectedCategories.length > 0 ? selectedCategories : undefined,
+        promotionName,
       }),
+    enabled: false,
   })
+
+  useEffect(() => {
+    promotionsQuery.refetch()
+  }, [searchParams, selectedCategories, promotionsQuery])
 
   const handleCheckboxChange = (category: string) => {
     setSelectedCategories((prev: string[]) => {
+      let updatedCategories
+
       if (prev.includes(category)) {
-        return prev.filter((cat) => cat !== category)
+        updatedCategories = prev.filter((cat) => cat !== category)
       } else {
-        return [...prev, category]
+        updatedCategories = [...prev, category]
       }
+
+      const params = new URLSearchParams(searchParams)
+      params.set('categories', updatedCategories.join(','))
+      setSearchParams(params)
+
+      return updatedCategories
     })
   }
 
@@ -47,12 +70,10 @@ export default function Home() {
       <div className="flex w-app flex-col space-y-4 text-slate-200">
         <h1 className="mt-4 text-3xl font-bold">Jogos recomendados</h1>
         <div className="flex justify-between">
-          {promotionsQuery.data &&
-            promotionsQuery.data
-              .slice(0, 6)
-              .map((promotion) => (
-                <GameCard key={promotion.id} promotion={promotion} />
-              ))}
+          {recommededPromotions &&
+            recommededPromotions.map((promotion) => (
+              <GameCard key={promotion.id} promotion={promotion} />
+            ))}
         </div>
         <h1 className="mt-6 text-3xl font-bold">
           Ache seu próximo game favorito!
@@ -92,10 +113,13 @@ export default function Home() {
           </DropdownMenu>
         </div>
         <div className="grid grid-cols-5 gap-x-3 gap-y-2 lg:grid-cols-6">
-          {promotionsQuery.data &&
+          {promotionsQuery.data && promotionsQuery.data.length > 0 ? (
             promotionsQuery.data.map((promotion) => (
               <GameCard key={promotion.id} promotion={promotion} />
-            ))}
+            ))
+          ) : (
+            <h1>Promoção não encontrada</h1>
+          )}
         </div>
       </div>
     </>

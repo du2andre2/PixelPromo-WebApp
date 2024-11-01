@@ -34,7 +34,7 @@
         {
             "id": "2",
             "userId": "1",
-            "title": "The Witcher 3",
+            "title": "the Witcher 3",
             "description": "Jogo de RPG e aventura",
             "originalPrice": "200,00",
             "discountedPrice": "180,00",
@@ -353,5 +353,182 @@
             "id": "6",
             "name": "Bruno Marques"
         } 
+    ],
+    "recommended-promotions": [
+        {
+            "id": "1",
+            "userId": "1",
+            "title": "Fifa 13",
+            "description": "Simulação de um jogo de futebol",
+            "originalPrice": "300,00",
+            "discountedPrice": "255,00",
+            "discountBadge": "15",
+            "platform": "Steam",
+            "imageUrl": "https://th.bing.com/th/id/OIP.DvqPM7Zz6dvUNymwsE-EgAHaHx?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": [
+              "esportes"
+            ],
+            "createdAt": "2024-09-01T12:34:32.5657674-03:00"
+        },
+        {
+            "id": "2",
+            "userId": "1",
+            "title": "the Witcher 3",
+            "description": "Jogo de RPG e aventura",
+            "originalPrice": "200,00",
+            "discountedPrice": "180,00",
+            "discountBadge": "10",
+            "platform": "GOG",
+            "imageUrl": "https://th.bing.com/th/id/OIP.wI2RFtQLYni68wjsVl0ubQHaEK?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["rpg", "aventura"],
+            "createdAt": "2024-09-02T14:25:45.7867654-03:00"
+        },
+        {
+            "id": "3",
+            "userId": "1",
+            "title": "Cyberpunk 2077",
+            "description": "Jogo de RPG futurista",
+            "originalPrice": "250,00",
+            "discountedPrice": "200,00",
+            "discountBadge": "20",
+            "platform": "Steam",
+            "imageUrl": "https://th.bing.com/th/id/OIP.qxRhPuP7h0EwtXBBya3ApwHaLH?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["rpg", "ação"],
+            "createdAt": "2024-09-03T16:45:12.1234567-03:00"
+        },
+        {
+            "id": "4",
+            "userId": "1",
+            "title": "Minecraft",
+            "description": "Jogo de construção e sobrevivência",
+            "originalPrice": "150,00",
+            "discountedPrice": "120,00",
+            "discountBadge": "20",
+            "platform": "Microsoft",
+            "imageUrl": "https://th.bing.com/th/id/OIP.MBm7UYm9qS8hJJ9uJtGSpgHaHa?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["sandbox", "aventura"],
+            "createdAt": "2024-09-04T08:20:10.6543211-03:00"
+        },
+        {
+            "id": "5",
+            "userId": "1",
+            "title": "NBA 2k25",
+            "description": "Seja um jogador de basquete",
+            "originalPrice": "280,00",
+            "discountedPrice": "210,00",
+            "discountBadge": "25",
+            "platform": "Steam",
+            "imageUrl": "https://th.bing.com/th/id/OIP.tHE3VEFJnSTjPYl8e_LztwHaEK?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["esportes"],
+            "createdAt": "2024-09-05T12:15:30.5671234-03:00"
+        },
+        {
+            "id": "6",
+            "userId": "1",
+            "title": "Skyrim",
+            "description": "Rpg medieval",
+            "originalPrice": "70,00",
+            "discountedPrice": "24,00",
+            "discountBadge": "65",
+            "platform": "GOG",
+            "imageUrl": "https://th.bing.com/th/id/R.91e648e3c0f2f0c48873032289cb90b9?rik=z7CKicTLBBKJZg&pid=ImgRaw&r=0",
+            "link": "https://www.google.com/",
+            "categories": ["rpg", "aventura"],
+            "createdAt": "2024-09-06T18:22:45.8976543-03:00"
+        }
+    ],
+    "wish-list": [
+        {
+            "id": "1",
+            "userId": "1",
+            "title": "Fifa 13",
+            "description": "Simulação de um jogo de futebol",
+            "originalPrice": "300,00",
+            "discountedPrice": "255,00",
+            "discountBadge": "15",
+            "platform": "Steam",
+            "imageUrl": "https://th.bing.com/th/id/OIP.DvqPM7Zz6dvUNymwsE-EgAHaHx?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": [
+              "esportes"
+            ],
+            "createdAt": "2024-09-01T12:34:32.5657674-03:00"
+        },
+        {
+            "id": "2",
+            "userId": "1",
+            "title": "the Witcher 3",
+            "description": "Jogo de RPG e aventura",
+            "originalPrice": "200,00",
+            "discountedPrice": "180,00",
+            "discountBadge": "10",
+            "platform": "GOG",
+            "imageUrl": "https://th.bing.com/th/id/OIP.wI2RFtQLYni68wjsVl0ubQHaEK?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["rpg", "aventura"],
+            "createdAt": "2024-09-02T14:25:45.7867654-03:00"
+        },
+        {
+            "id": "3",
+            "userId": "1",
+            "title": "Cyberpunk 2077",
+            "description": "Jogo de RPG futurista",
+            "originalPrice": "250,00",
+            "discountedPrice": "200,00",
+            "discountBadge": "20",
+            "platform": "Steam",
+            "imageUrl": "https://th.bing.com/th/id/OIP.qxRhPuP7h0EwtXBBya3ApwHaLH?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["rpg", "ação"],
+            "createdAt": "2024-09-03T16:45:12.1234567-03:00"
+        },
+        {
+            "id": "4",
+            "userId": "1",
+            "title": "Minecraft",
+            "description": "Jogo de construção e sobrevivência",
+            "originalPrice": "150,00",
+            "discountedPrice": "120,00",
+            "discountBadge": "20",
+            "platform": "Microsoft",
+            "imageUrl": "https://th.bing.com/th/id/OIP.MBm7UYm9qS8hJJ9uJtGSpgHaHa?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["sandbox", "aventura"],
+            "createdAt": "2024-09-04T08:20:10.6543211-03:00"
+        },
+        {
+            "id": "5",
+            "userId": "1",
+            "title": "NBA 2k25",
+            "description": "Seja um jogador de basquete",
+            "originalPrice": "280,00",
+            "discountedPrice": "210,00",
+            "discountBadge": "25",
+            "platform": "Steam",
+            "imageUrl": "https://th.bing.com/th/id/OIP.tHE3VEFJnSTjPYl8e_LztwHaEK?rs=1&pid=ImgDetMain",
+            "link": "https://www.google.com/",
+            "categories": ["esportes"],
+            "createdAt": "2024-09-05T12:15:30.5671234-03:00"
+        },
+        {
+            "id": "6",
+            "userId": "1",
+            "title": "Skyrim",
+            "description": "Rpg medieval",
+            "originalPrice": "70,00",
+            "discountedPrice": "24,00",
+            "discountBadge": "65",
+            "platform": "GOG",
+            "imageUrl": "https://th.bing.com/th/id/R.91e648e3c0f2f0c48873032289cb90b9?rik=z7CKicTLBBKJZg&pid=ImgRaw&r=0",
+            "link": "https://www.google.com/",
+            "categories": ["rpg", "aventura"],
+            "createdAt": "2024-09-06T18:22:45.8976543-03:00"
+        }
     ]
 }
+

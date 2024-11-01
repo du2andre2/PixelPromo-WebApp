@@ -134,18 +134,18 @@ export default function Promotion() {
                 </div>
                 <div className="flex items-center gap-6">
                   <button
-                    className={` ${favorited ? 'text-red-700' : 'border-slate-200'} transition-colors duration-200`}
+                    className={` ${favorited ? 'text-red-500' : 'border-slate-200'} transition-colors duration-200`}
                     onClick={
                       favorited
                         ? handleUnfavoritePromotion
                         : handleFavoritePromotion
                     }
                   >
-                    <Heart size={20} />
+                    <Heart size={20} fill={`${favorited ? 'red' : ''}`} />
                   </button>
 
                   <button
-                    className={`flex items-center gap-1 rounded-sm border px-1 text-xl${
+                    className={`flex items-center gap-1 rounded-sm border px-1 text-xl ${
                       liked
                         ? 'border-blue-700 text-blue-700'
                         : 'border-slate-200'
@@ -219,7 +219,7 @@ export default function Promotion() {
           </div>
         </div>
 
-        <div className="flex flex-col space-y-1">
+        <div className="flex flex-col space-y-2">
           {promotionsQuery &&
             promotionsQuery
               .slice(0, 4)
