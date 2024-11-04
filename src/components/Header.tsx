@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ScrollText, Search } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import logoImg from '@/assets/logo.jpg'
@@ -84,9 +84,12 @@ export function Header() {
                 <WishList />
               </DialogContent>
             </Dialog>
-            <div className="flex items-center rounded-sm border border-slate-200 p-2">
+            <Link
+              to={`/user/1`}
+              className="flex items-center rounded-sm border border-slate-200 p-2"
+            >
               Meu perfil
-            </div>
+            </Link>
           </div>
         </div>
       </div>

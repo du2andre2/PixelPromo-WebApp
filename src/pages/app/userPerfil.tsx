@@ -1,11 +1,19 @@
+import { DialogTitle } from '@radix-ui/react-dialog'
 import { Pencil, Plus } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 
 import bronzeBadge from '@/assets/bronze final.svg'
 import userImg from '@/assets/user-img.jpg'
+import CreatePromotionDialog from '@/components/CreatePromotionDialog'
 import PublishedOffersTable from '@/components/PublishedOffersTable'
 import RankItem from '@/components/RankItem'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 export default function Perfil() {
   const { id } = useParams()
@@ -44,10 +52,21 @@ export default function Perfil() {
           <div className="flex flex-1 flex-col gap-4 rounded-sm border border-gray-700 bg-gray-800 px-6 py-4">
             <div className="flex items-center justify-between">
               <p className="text-2xl font-semibold">Minhas Ofertas</p>
-              <button className="flex items-center justify-between gap-1 rounded-sm bg-green-600 px-2 py-1 text-xl">
-                Criar oferta
-                <Plus size={24} />
-              </button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="flex items-center justify-between gap-1 rounded-sm bg-green-600 px-2 py-1 text-lg">
+                    Criar oferta
+                    <Plus size={20} />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="min-w-[400px] border border-gray-700 bg-gray-800 text-slate-200">
+                  <DialogTitle></DialogTitle>
+                  <DialogHeader className="flex items-center text-xl">
+                    Criar promoção
+                  </DialogHeader>
+                  <CreatePromotionDialog />
+                </DialogContent>
+              </Dialog>
             </div>
             <PublishedOffersTable />
           </div>

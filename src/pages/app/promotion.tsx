@@ -145,7 +145,7 @@ export default function Promotion() {
                   </button>
 
                   <button
-                    className={`flex items-center gap-1 rounded-sm border px-1 text-xl ${
+                    className={`flex items-center gap-1 rounded-sm border px-1 text-lg ${
                       liked
                         ? 'border-blue-700 text-blue-700'
                         : 'border-slate-200'

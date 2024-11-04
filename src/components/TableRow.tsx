@@ -16,7 +16,7 @@ export function PublishedOfferRow() {
       <TableCell>23%</TableCell>
       <TableCell>27</TableCell>
       <TableCell>
-        <button className="flex items-center justify-center gap-1 rounded-sm bg-red-500 px-2">
+        <button className="flex items-center justify-center gap-1 rounded-sm bg-red-500 px-2 py-0.5">
           Excluir
           <X size={16} className="mb-0.5" />
         </button>

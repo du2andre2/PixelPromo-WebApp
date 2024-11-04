@@ -45,7 +45,7 @@ export default function WishListItem({ promotion }: PromotionProps) {
         />
       </Link>
 
-      <div className="mx-2 my-1 flex w-48 flex-col">
+      <div className="mx-2 my-1 flex w-48 flex-col pb-1 pr-2 pt-4">
         <div className="flex basis-4/5">
           <div className="mb-1 flex flex-1 flex-col gap-0">
             <div className="flex basis-3/4">

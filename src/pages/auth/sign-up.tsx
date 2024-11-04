@@ -65,7 +65,7 @@ export default function SignUp() {
             <input
               {...register('name')}
               placeholder="Fulano de tal"
-              className="rounded-md bg-gray-700 p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
             />
             {errors.name && (
               <p className="text-red-500">{errors.name.message}</p>
@@ -78,7 +78,7 @@ export default function SignUp() {
               {...register('email')}
               type="email"
               placeholder="nome@email.com"
-              className="rounded-md bg-gray-700 p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
             />
             {errors.email && (
               <p className="text-red-500">{errors.email.message}</p>
@@ -91,7 +91,7 @@ export default function SignUp() {
               {...register('password')}
               type="password"
               placeholder="******"
-              className="rounded-md bg-gray-700 p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
             />
             {errors.password && (
               <p className="text-red-500">{errors.password.message}</p>
@@ -104,7 +104,7 @@ export default function SignUp() {
               {...register('confirmPassword')}
               type="password"
               placeholder="******"
-              className="rounded-md bg-gray-700 p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
             />
             {errors.confirmPassword && (
               <p className="text-red-500">{errors.confirmPassword.message}</p>
@@ -113,7 +113,7 @@ export default function SignUp() {
 
           <Button
             type="submit"
-            className="mt-6 w-full rounded-md bg-green-600 py-2 text-white hover:bg-green-700"
+            className="mt-6 w-full rounded-md bg-green-500 py-2 text-white hover:bg-green-700"
           >
             Cadastrar-se
           </Button>
