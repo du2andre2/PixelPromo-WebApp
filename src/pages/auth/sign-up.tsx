@@ -66,6 +66,7 @@ export default function SignUp() {
               {...register('name')}
               placeholder="Fulano de tal"
               className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              required
             />
             {errors.name && (
               <p className="text-red-500">{errors.name.message}</p>
@@ -79,6 +80,7 @@ export default function SignUp() {
               type="email"
               placeholder="nome@email.com"
               className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              required
             />
             {errors.email && (
               <p className="text-red-500">{errors.email.message}</p>
@@ -92,6 +94,7 @@ export default function SignUp() {
               type="password"
               placeholder="******"
               className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              required
             />
             {errors.password && (
               <p className="text-red-500">{errors.password.message}</p>
@@ -105,6 +108,7 @@ export default function SignUp() {
               type="password"
               placeholder="******"
               className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              required
             />
             {errors.confirmPassword && (
               <p className="text-red-500">{errors.confirmPassword.message}</p>

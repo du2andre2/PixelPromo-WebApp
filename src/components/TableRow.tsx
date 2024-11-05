@@ -1,8 +1,11 @@
 import { Search, X } from 'lucide-react'
+import { useParams } from 'react-router-dom'
 
 import { TableCell, TableRow } from '@/components/ui/table'
 
 export function PublishedOfferRow() {
+  const { id } = useParams()
+
   return (
     <TableRow>
       <TableCell className="flex justify-center">

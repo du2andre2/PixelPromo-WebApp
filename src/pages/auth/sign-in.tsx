@@ -59,6 +59,7 @@ export default function SignIn() {
               type="email"
               placeholder="nome@email.com"
               className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              required
             />
             {errors.email && (
               <p className="text-red-500">{errors.email.message}</p>
@@ -72,6 +73,7 @@ export default function SignIn() {
               type="password"
               placeholder="******"
               className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              required
             />
             {errors.password && (
               <p className="text-red-500">{errors.password.message}</p>
