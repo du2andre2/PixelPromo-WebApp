@@ -10,7 +10,7 @@ export async function getInteraction(userId: string | undefined) {
   //   params: { gameId },
   // })
 
-  const response = await api.get<User>(`/user/${userId}`)
+  const response = await api.get<User>(`/users/${userId}`)
 
   return response.data
 }

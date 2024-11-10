@@ -22,7 +22,7 @@ export async function getPromotion(promotionId: string | undefined) {
   const response = await api.get<Promotion>(`/promotions/${promotionId}`)
   const userId = response.data.userId
 
-  const userResponse = await api.get<User>(`/user/${userId}`)
+  const userResponse = await api.get<User>(`/users/${userId}`)
   const user = userResponse.data
 
   const interaction = { ...response.data, userName: user.name }

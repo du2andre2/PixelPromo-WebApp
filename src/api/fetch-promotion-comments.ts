@@ -51,9 +51,7 @@ export async function fetchPromotions({
   const promotions = await Promise.all(
     response.data.map(async (promotion) => {
       const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(
-        `/interactions/${promotionId}`,
-      )
+      const likesResponse = await api.get<Interactions>(`/interactions/statistics/${promotionId}`)
 
       return {
         ...promotion,
@@ -73,13 +71,13 @@ export async function fetchPromotionComments(promotionId: string | undefined) {
   //   })
 
   const response = await api.get<PromotionComment[]>(
-    `/comments?promotionId=${promotionId}`,
+    `/interactions/comments/${promotionId}`,
   )
 
   const comment = await Promise.all(
     response.data.map(async (promotion) => {
       const promotionId = promotion.id
-      const user = await api.get(`/user/${promotionId}`)
+      const user = await api.get(`/users/${promotionId}`)
 
       return {
         ...promotion,

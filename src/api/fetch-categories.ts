@@ -6,7 +6,7 @@ export interface Categories {
 }
 
 export async function fetchCategories() {
-  const response = await api.get<Categories[]>('/categories')
+  const response = await api.get<Categories[]>('/categories');
 
   return response.data
 }

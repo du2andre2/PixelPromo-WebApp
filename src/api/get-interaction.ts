@@ -13,7 +13,7 @@ export async function getInteraction(gameId: string | undefined) {
   //   params: { gameId },
   // })
 
-  const response = await api.get<Interactions>(`/interactions/${gameId}`)
+  const response = await api.get<Interactions>(`/interactions/statistics/${gameId}`)
 
   return response.data
 }

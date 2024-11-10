@@ -10,7 +10,7 @@ export async function getWishList() {
     response.data.map(async (promotion) => {
       const promotionId = promotion.id
       const likesResponse = await api.get<Interactions>(
-        `/interactions/${promotionId}`,
+        `/interactions/statistics/${promotionId}`,
       )
 
       return {

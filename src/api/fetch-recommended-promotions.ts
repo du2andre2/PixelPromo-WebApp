@@ -6,7 +6,7 @@ import type { Promotion } from './get-promotion'
 export async function fetchRecommendedPromotions() {
   // const response = await api.get<Promotions[]>('/recommended-promotions')
 
-  const response = await api.get<Promotion[]>('/recommended-promotions')
+  const response = await api.get<Promotion[]>('/promotions?limit=6')
 
   //   const promotions = await Promise.all(
   //     response.data.map(async (promotion) => {
@@ -26,9 +26,7 @@ export async function fetchRecommendedPromotions() {
   const recommendedPromotions = await Promise.all(
     response.data.map(async (promotion) => {
       const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(
-        `/interactions/${promotionId}`,
-      )
+      const likesResponse = await api.get<Interactions>(`/interactions/statistics/${promotionId}`   )
 
       return {
         ...promotion,

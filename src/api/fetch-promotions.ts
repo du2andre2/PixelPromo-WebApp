@@ -19,9 +19,7 @@ export async function fetchPromotions({
   //   },
   // })
 
-  const response = await api.get<Promotion[]>(
-    `/promotions?title=${promotionName || ''}`,
-  )
+  const response = await api.get<Promotion[]>(`/promotions?title=${promotionName || ''}`)
 
   //   const promotions = await Promise.all(
   //     response.data.map(async (promotion) => {
@@ -41,9 +39,7 @@ export async function fetchPromotions({
   const promotions = await Promise.all(
     response.data.map(async (promotion) => {
       const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(
-        `/interactions/${promotionId}`,
-      )
+      const likesResponse = await api.get<Interactions>(`/interactions/statistics/${promotionId}`)
 
       return {
         ...promotion,
