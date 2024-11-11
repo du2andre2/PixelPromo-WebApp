@@ -1,6 +1,6 @@
 import { api } from '@/lib/axios'
 
-export interface Interactions {
+export interface InteractionsStatistics {
   id: string
   gameId: string
   comment: number
@@ -8,12 +8,10 @@ export interface Interactions {
   like: number
 }
 
-export async function getInteraction(gameId: string | undefined) {
-  // const response = await api.get<Interactions>('/interactions', {
-  //   params: { gameId },
-  // })
-
-  const response = await api.get<Interactions>(`/interactions/statistics/${gameId}`)
+export async function getInteraction(promotionId: string | undefined) {
+  const response = await api.get<InteractionsStatistics>(
+    `/interactions/statistics/${promotionId}`,
+  )
 
   return response.data
 }

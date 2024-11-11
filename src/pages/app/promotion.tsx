@@ -1,17 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { fetchPromotionComments } from '@/api/fetch-promotion-comments'
-import { fetchPromotions } from '@/api/fetch-promotions'
-import { getInteraction } from '@/api/get-interaction'
+import { fetchRecommendedPromotions } from '@/api/fetch-recommended-promotions'
 import { getPromotion } from '@/api/get-promotion'
-import userImage from '@/assets/user-img.jpg'
 import GameCard from '@/components/GameCard'
 
 const commentFormSchema = z.object({
@@ -23,12 +21,7 @@ type CommentFormData = z.infer<typeof commentFormSchema>
 export default function Promotion() {
   const { id } = useParams()
 
-  const { data: promotionsQuery } = useQuery({
-    queryKey: ['promotionsQuery'],
-    queryFn: () => fetchPromotions({}),
-  })
-
-  const { data: promotion } = useQuery({
+  const { data: promotionCard } = useQuery({
     queryKey: ['promotionQuery', id],
     queryFn: () => getPromotion(id),
     enabled: !!id,
@@ -40,12 +33,6 @@ export default function Promotion() {
     enabled: !!id,
   })
 
-  const { data: interactionsQuery } = useQuery({
-    queryKey: ['interactionsQuery', id],
-    queryFn: () => getInteraction(id),
-    enabled: !!id,
-  })
-
   const { handleSubmit, register } = useForm<CommentFormData>({
     resolver: zodResolver(commentFormSchema),
     defaultValues: {
@@ -53,9 +40,20 @@ export default function Promotion() {
     },
   })
 
+  const { data: recommededPromotions } = useQuery({
+    queryKey: ['recommededPromotions'],
+    queryFn: fetchRecommendedPromotions,
+  })
+
   const [liked, setLiked] = useState<boolean>(false)
   const [favorited, setFavorited] = useState<boolean>(false)
-  const [likesAmount, setLikesAmount] = useState<number>(7)
+  const [likesAmount, setLikesAmount] = useState<number>(0)
+
+  useEffect(() => {
+    if (promotionCard?.interactions?.like) {
+      setLikesAmount(promotionCard.interactions.like)
+    }
+  }, [promotionCard])
 
   function handleFavoritePromotion() {
     setFavorited(true)
@@ -87,7 +85,7 @@ export default function Promotion() {
           <div className="flex rounded-sm border border-gray-700 bg-gray-800 px-6">
             <div className="flex basis-1/4 items-center justify-center border-r border-gray-900 p-4">
               <img
-                src={promotion?.imageUrl}
+                src={promotionCard?.promotion?.imageUrl || ''}
                 alt="imagem do jogo"
                 className="h-40 rounded-md object-cover"
               />
@@ -95,10 +93,14 @@ export default function Promotion() {
             <div className="flex flex-1 flex-col gap-4 px-8 py-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col gap-4">
-                  <p className="text-4xl">{promotion?.title}</p>
+                  <p className="text-4xl">{promotionCard?.promotion?.title}</p>
                   <div>
                     <Link
-                      to={promotion?.link ? promotion.link : '#'}
+                      to={
+                        promotionCard?.promotion?.link
+                          ? promotionCard?.promotion.link
+                          : '#'
+                      }
                       target="_blank"
                     >
                       <button className="flex items-center gap-2 border border-slate-200 px-2 py-1 text-lg">
@@ -111,12 +113,14 @@ export default function Promotion() {
                   <div className="flex basis-3/4">
                     <div className="flex flex-1 flex-col">
                       <p className="text-lg line-through">
-                        R$ {promotion?.originalPrice}
+                        R$ {promotionCard?.promotion?.originalPrice}
                       </p>
-                      <p className="text-xl">R$ {promotion?.discountedPrice}</p>
+                      <p className="text-xl">
+                        R$ {promotionCard?.promotion?.discountedPrice}
+                      </p>
                     </div>
                     <div className="mt-3 h-fit rounded-md bg-green-500 p-1">
-                      -{promotion?.discountBadge}%
+                      -{promotionCard?.promotion?.discountBadge}%
                     </div>
                   </div>
                 </div>
@@ -125,12 +129,12 @@ export default function Promotion() {
                 <div className="flex items-center gap-4">
                   <div className="flex h-10">
                     <img
-                      src={userImage}
+                      src={promotionCard?.user?.pictureUrl}
                       alt="Imagem do usuário"
                       className="rounded-full"
                     />
                   </div>
-                  <p>{promotion?.userName}</p>
+                  <p>{promotionCard?.user?.name}</p>
                 </div>
                 <div className="flex items-center gap-6">
                   <button
@@ -162,12 +166,14 @@ export default function Promotion() {
             </div>
           </div>
           <div className="flex flex-col rounded-sm border border-gray-700 bg-gray-800 px-6 py-2">
-            <p className="text-xl-">{interactionsQuery?.comment} comentários</p>
+            <p className="text-xl-">
+              {promotionCard?.interactions?.comment} comentários
+            </p>
             <div className="mb-2 flex w-full flex-col">
               <div className="mt-2 flex w-full items-center gap-2">
                 <div>
                   <img
-                    src={userImage}
+                    src={promotionCard?.user?.pictureUrl}
                     alt="Imagem do usuário"
                     className="w-12 rounded-full"
                   />
@@ -195,22 +201,22 @@ export default function Promotion() {
                 </div>
               </div>
               {promotionComments &&
-                promotionComments.map((comment) => (
+                promotionComments.map((commentCard) => (
                   <div
                     className="mb-4 mt-2 flex w-full items-center gap-2"
-                    key={comment.id}
+                    key={commentCard.comment.id}
                   >
                     <div>
                       <img
-                        src={userImage}
+                        src={commentCard.user.pictureUrl}
                         alt="Imagem do usuário"
                         className="w-12 rounded-full"
                       />
                     </div>
                     <div className="flex h-full w-full flex-col">
                       <div className="flex w-full flex-col px-2">
-                        <p className="w-full">{comment.commentOwner}</p>
-                        <p className="text-sm">{comment.comment}</p>
+                        <p className="w-full">{commentCard.user.name}</p>
+                        <p className="text-sm">{commentCard.comment.comment}</p>
                       </div>
                     </div>
                   </div>
@@ -220,12 +226,13 @@ export default function Promotion() {
         </div>
 
         <div className="flex flex-col space-y-2">
-          {promotionsQuery &&
-            promotionsQuery
-              .slice(0, 4)
-              .map((promotion) => (
-                <GameCard key={promotion.id} promotion={promotion} />
-              ))}
+          {recommededPromotions &&
+            recommededPromotions.map((promotion) => (
+              <GameCard
+                key={promotion.promotion.id}
+                promotionCard={promotion}
+              />
+            ))}
         </div>
       </div>
     </>

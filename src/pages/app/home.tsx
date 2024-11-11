@@ -35,16 +35,16 @@ export default function Home() {
     queryKey: ['promotionsQuery', selectedCategories, promotionName],
     queryFn: () =>
       fetchPromotions({
-        categories:
+        category:
           selectedCategories.length > 0 ? selectedCategories : undefined,
-        promotionName,
+        search: promotionName,
       }),
-    enabled: false,
   })
 
   useEffect(() => {
+    // Atualiza a consulta sempre que searchParams ou selectedCategories mudarem
     promotionsQuery.refetch()
-  }, [searchParams, selectedCategories, promotionsQuery])
+  }, [searchParams, selectedCategories])
 
   const handleCheckboxChange = (category: string) => {
     setSelectedCategories((prev: string[]) => {
@@ -72,7 +72,10 @@ export default function Home() {
         <div className="flex justify-between">
           {recommededPromotions &&
             recommededPromotions.map((promotion) => (
-              <GameCard key={promotion.id} promotion={promotion} />
+              <GameCard
+                key={promotion.promotion.id}
+                promotionCard={promotion}
+              />
             ))}
         </div>
         <h1 className="mt-6 text-3xl font-bold">
@@ -115,7 +118,10 @@ export default function Home() {
         <div className="grid grid-cols-5 gap-x-3 gap-y-2 lg:grid-cols-6">
           {promotionsQuery.data && promotionsQuery.data.length > 0 ? (
             promotionsQuery.data.map((promotion) => (
-              <GameCard key={promotion.id} promotion={promotion} />
+              <GameCard
+                key={promotion.promotion.id}
+                promotionCard={promotion}
+              />
             ))
           ) : (
             <h1>Promoção não encontrada</h1>

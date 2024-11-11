@@ -1,39 +1,32 @@
 import { api } from '@/lib/axios'
 
-import type { Interactions } from './get-interaction'
-import type { Promotion } from './get-promotion'
+import type { InteractionsStatistics } from './get-interaction'
+import type { Promotion, PromotionCard } from './get-promotion'
+import type { User } from './get-user'
 
-export async function fetchRecommendedPromotions() {
-  // const response = await api.get<Promotions[]>('/recommended-promotions')
+export async function fetchRecommendedPromotions(): Promise<PromotionCard[]> {
+  const response = await api.get<Promotion[]>('/promotions', {
+    params: {
+      limit: 6,
+    },
+  })
 
-  const response = await api.get<Promotion[]>('/promotions?limit=6')
-
-  //   const promotions = await Promise.all(
-  //     response.data.map(async (promotion) => {
-  //       const likesResponse = await api.get<Interactions>('/interactions', {
-  //         params: {
-  //           gameId: promotion.id,
-  //         },
-  //       })
-
-  //       return {
-  //         ...promotion,
-  //         likesAmount: likesResponse.data.like,
-  //       }
-  //     }),
-  //   )
-
-  const recommendedPromotions = await Promise.all(
+  const promotionCards = await Promise.all(
     response.data.map(async (promotion) => {
-      const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(`/interactions/statistics/${promotionId}`   )
+      const [userResponse, interactionsResponse] = await Promise.all([
+        api.get<User>(`/users/${promotion.userId}`),
+        api.get<InteractionsStatistics>(
+          `/interactions/statistics/${promotion.id}`,
+        ),
+      ])
 
       return {
-        ...promotion,
-        likes: likesResponse.data.like,
-      }
+        promotion,
+        user: userResponse.data,
+        interactions: interactionsResponse.data,
+      } as PromotionCard
     }),
   )
 
-  return recommendedPromotions
+  return promotionCards
 }

@@ -1,7 +1,6 @@
 import { api } from '@/lib/axios'
 
-import type { Interactions } from './get-interaction'
-import type { Promotion } from './get-promotion'
+import { User } from './get-user'
 
 export interface PromotionComment {
   id: string
@@ -13,80 +12,25 @@ export interface PromotionComment {
   createdAt: string
 }
 
-interface GetPromotionsQuery {
-  categories?: string[]
-  promotionName?: string
-}
-
-export async function fetchPromotions({
-  categories,
-  promotionName,
-}: GetPromotionsQuery) {
-  // const response = await api.get<Promotions[]>('/promotions', {
-  //   params: {
-  //     categories: categories ? categories.join(',') : undefined,
-  //     title: promotionName,
-  //   },
-  // })
-
-  const response = await api.get<Promotion[]>(
-    `/promotions?title=${promotionName || ''}`,
-  )
-
-  //   const promotions = await Promise.all(
-  //     response.data.map(async (promotion) => {
-  //       const likesResponse = await api.get<Interactions>('/interactions', {
-  //         params: {
-  //           gameId: promotion.id,
-  //         },
-  //       })
-
-  //       return {
-  //         ...promotion,
-  //         likesAmount: likesResponse.data.like,
-  //       }
-  //     }),
-  //   )
-
-  const promotions = await Promise.all(
-    response.data.map(async (promotion) => {
-      const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(`/interactions/statistics/${promotionId}`)
-
-      return {
-        ...promotion,
-        likes: likesResponse.data.like,
-      }
-    }),
-  )
-
-  return promotions
+export interface PromotionCommentCard {
+  user: User
+  comment: PromotionComment
 }
 
 export async function fetchPromotionComments(promotionId: string | undefined) {
-  //   const response = await api.get<Promotions>('/promotions', {
-  //     params: {
-  //       promotionId,
-  //     },
-  //   })
-
-  const response = await api.get<PromotionComment[]>(
+  const commentResponse = await api.get<PromotionComment[]>(
     `/interactions/comments/${promotionId}`,
   )
 
-  const comment = await Promise.all(
-    response.data.map(async (promotion) => {
-      const promotionId = promotion.id
-      const user = await api.get(`/users/${promotionId}`)
-
+  const promotionCommentCards: PromotionCommentCard[] = await Promise.all(
+    commentResponse.data.map(async (comment) => {
+      const userResponse = await api.get<User>(`/users/${comment.userId}`)
       return {
-        ...promotion,
-        commentOwner: user.data.name,
+        comment,
+        user: userResponse.data,
       }
     }),
   )
 
-  console.log(comment)
-
-  return comment
+  return promotionCommentCards
 }

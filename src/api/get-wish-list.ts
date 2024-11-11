@@ -1,22 +1,28 @@
 import { api } from '@/lib/axios'
 
-import type { Interactions } from './get-interaction'
-import type { Promotion } from './get-promotion'
+import type { InteractionsStatistics } from './get-interaction'
+import type { Promotion, PromotionCard } from './get-promotion'
+import type { User } from './get-user'
 
-export async function getWishList() {
-  const response = await api.get<Promotion[]>('/wish-list')
+export async function getWishList(
+  userId: string | undefined,
+): Promise<PromotionCard[]> {
+  const response = await api.get<Promotion[]>(`/promotions/favorites/${userId}`)
 
   const wishList = await Promise.all(
     response.data.map(async (promotion) => {
-      const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(
-        `/interactions/statistics/${promotionId}`,
-      )
+      const [userResponse, interactionsResponse] = await Promise.all([
+        api.get<User>(`/users/${promotion.userId}`),
+        api.get<InteractionsStatistics>(
+          `/interactions/statistics/${promotion.id}`,
+        ),
+      ])
 
       return {
-        ...promotion,
-        likes: likesResponse.data.like,
-      }
+        promotion,
+        user: userResponse.data,
+        interactions: interactionsResponse.data,
+      } as PromotionCard
     }),
   )
 

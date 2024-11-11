@@ -2,17 +2,18 @@ import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import type { Promotion } from '@/api/get-promotion'
-import userImg from '@/assets/user-img.jpg'
+import type { PromotionCard } from '@/api/get-promotion'
 
 interface PromotionProps {
-  promotion: Promotion
+  promotionCard: PromotionCard
 }
 
-export default function GameCard({ promotion }: PromotionProps) {
+export default function GameCard({ promotionCard }: PromotionProps) {
   const [liked, setLiked] = useState<boolean>(false)
   const [favorited, setFavorited] = useState<boolean>(false)
-  const [likesAmount, setLikesAmount] = useState<number>(promotion.likes)
+  const [likesAmount, setLikesAmount] = useState<number>(
+    promotionCard.interactions.like,
+  )
 
   function handleFavoritePromotion() {
     setFavorited(true)
@@ -36,10 +37,10 @@ export default function GameCard({ promotion }: PromotionProps) {
     <div className="flex h-52 w-52 flex-col rounded-sm border border-gray-700 bg-gray-800">
       <Link
         className="flex flex-1 items-center justify-center gap-2 border-b border-gray-700"
-        to={`/promotion/${promotion.id}`}
+        to={`/promotion/${promotionCard.promotion.id}`}
       >
         <img
-          src={promotion.imageUrl}
+          src={promotionCard.promotion.imageUrl}
           alt="Imagem do jogo"
           className="w-42 h-20 object-cover"
         />
@@ -51,19 +52,19 @@ export default function GameCard({ promotion }: PromotionProps) {
             <div className="flex basis-3/4">
               <div className="flex flex-1 flex-col">
                 <p className="text-sm line-through">
-                  R$ {promotion.originalPrice}
+                  R$ {promotionCard.promotion.originalPrice}
                 </p>
-                <p>R$ {promotion.discountedPrice}</p>
+                <p>R$ {promotionCard.promotion.discountedPrice}</p>
               </div>
               <div className="mr-8 mt-2 h-fit rounded-md bg-green-500 p-1 text-sm">
-                -{promotion.discountBadge}%
+                -{promotionCard.promotion.discountBadge}%
               </div>
             </div>
-            <div className="basis-1/4">{promotion.title}</div>
+            <div className="basis-1/4">{promotionCard.promotion.title}</div>
           </div>
           <div className="mb-2 flex basis-1/5 items-end justify-end">
             <img
-              src={userImg}
+              src={promotionCard.user.pictureUrl}
               alt="Imagem do usuário"
               className="rounded-full"
             />
@@ -71,8 +72,8 @@ export default function GameCard({ promotion }: PromotionProps) {
         </div>
         <div className="flex basis-1/5 items-center justify-between">
           <p className="flex items-center gap-1 text-sm">
-            {promotion.platform}{' '}
-            <Link to={promotion.link} target="_blank">
+            {promotionCard.promotion.platform}{' '}
+            <Link to={promotionCard.promotion.link} target="_blank">
               <ExternalLink size={14} className="mb-0.5" />
             </Link>
           </p>

@@ -1,52 +1,53 @@
 import { api } from '@/lib/axios'
 
-import type { Interactions } from './get-interaction'
-import type { Promotion } from './get-promotion'
+import type { InteractionsStatistics } from './get-interaction'
+import type { Promotion, PromotionCard } from './get-promotion'
+import type { User } from './get-user'
 
 interface GetPromotionsQuery {
-  categories?: string[]
-  promotionName?: string
+  category?: string[]
+  search?: string
 }
 
 export async function fetchPromotions({
-  categories,
-  promotionName,
-}: GetPromotionsQuery) {
-  // const response = await api.get<Promotions[]>('/promotions', {
-  //   params: {
-  //     categories: categories ? categories.join(',') : undefined,
-  //     title: promotionName,
-  //   },
-  // })
+  category,
+  search,
+}: GetPromotionsQuery): Promise<PromotionCard[]> {
+  const response = await api.get<Promotion[]>('/promotions', {
+    params: {
+      category,
+      title: search,
+    },
+    paramsSerializer: (params) => {
+      const searchParams = new URLSearchParams()
+      Object.keys(params).forEach((key) => {
+        const value = params[key]
+        if (Array.isArray(value)) {
+          value.forEach((val) => searchParams.append(key, val))
+        } else if (value !== undefined) {
+          searchParams.append(key, value)
+        }
+      })
+      return searchParams.toString()
+    }
+  })
 
-  const response = await api.get<Promotion[]>(`/promotions?title=${promotionName || ''}`)
-
-  //   const promotions = await Promise.all(
-  //     response.data.map(async (promotion) => {
-  //       const likesResponse = await api.get<Interactions>('/interactions', {
-  //         params: {
-  //           gameId: promotion.id,
-  //         },
-  //       })
-
-  //       return {
-  //         ...promotion,
-  //         likesAmount: likesResponse.data.like,
-  //       }
-  //     }),
-  //   )
-
-  const promotions = await Promise.all(
+  const promotionCards = await Promise.all(
     response.data.map(async (promotion) => {
-      const promotionId = promotion.id
-      const likesResponse = await api.get<Interactions>(`/interactions/statistics/${promotionId}`)
+      const [userResponse, interactionsResponse] = await Promise.all([
+        api.get<User>(`/users/${promotion.userId}`),
+        api.get<InteractionsStatistics>(
+          `/interactions/statistics/${promotion.id}`,
+        ),
+      ])
 
       return {
-        ...promotion,
-        likes: likesResponse.data.like,
-      }
+        promotion,
+        user: userResponse.data,
+        interactions: interactionsResponse.data,
+      } as PromotionCard
     }),
   )
 
-  return promotions
+  return promotionCards
 }
