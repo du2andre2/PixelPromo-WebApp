@@ -1,5 +1,5 @@
 import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { PromotionCard } from '@/api/get-promotion'
@@ -9,18 +9,35 @@ interface PromotionProps {
 }
 
 export default function GameCard({ promotionCard }: PromotionProps) {
-  const [liked, setLiked] = useState<boolean>(false)
-  const [favorited, setFavorited] = useState<boolean>(false)
-  const [likesAmount, setLikesAmount] = useState<number>(
-    promotionCard.interactions.like,
+  const [liked, setLiked] = useState<boolean>(
+    promotionCard.promotionUserInteractions?.like || false,
   )
+  const [favorited, setFavorited] = useState<boolean>(
+    promotionCard.promotionUserInteractions?.favorite || false,
+  )
+  const [likesAmount, setLikesAmount] = useState<number>(
+    promotionCard.promotionInteractions.like,
+  )
+  const [favoritedAmount, setFavoritedAmount] = useState<number>(
+    promotionCard.promotionInteractions.favorite,
+  )
+
+  useEffect(() => {
+    // Set initial state based on the promotionCard data when component mounts
+    setLiked(promotionCard.promotionUserInteractions?.like || false)
+    setFavorited(promotionCard.promotionUserInteractions?.favorite || false)
+    setLikesAmount(promotionCard.promotionInteractions.like)
+    setFavoritedAmount(promotionCard.promotionInteractions.favorite)
+  }, [promotionCard])
 
   function handleFavoritePromotion() {
     setFavorited(true)
+    setFavoritedAmount(favoritedAmount + 1)
   }
 
   function handleUnfavoritePromotion() {
     setFavorited(false)
+    setFavoritedAmount(favoritedAmount - 1)
   }
 
   function handleLikePromotion() {
@@ -79,12 +96,15 @@ export default function GameCard({ promotionCard }: PromotionProps) {
           </p>
           <div className="flex items-center gap-2">
             <button
-              className={` ${favorited ? 'text-red-700' : 'border-slate-200'} transition-colors duration-200`}
+              className={`flex items-center gap-1 rounded-sm border px-1 text-sm ${
+                favorited ? 'border-red-500 text-red-500' : 'border-slate-200'
+              } transition-colors duration-200`}
               onClick={
                 favorited ? handleUnfavoritePromotion : handleFavoritePromotion
               }
             >
-              <Heart size={16} />
+              {favoritedAmount}
+              <Heart size={16} fill={`${favorited ? 'red' : ''}`} />
             </button>
 
             <button

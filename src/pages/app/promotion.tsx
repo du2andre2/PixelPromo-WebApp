@@ -48,19 +48,27 @@ export default function Promotion() {
   const [liked, setLiked] = useState<boolean>(false)
   const [favorited, setFavorited] = useState<boolean>(false)
   const [likesAmount, setLikesAmount] = useState<number>(0)
+  const [favoritedAmount, setFavoritedAmount] = useState<number>(0)
 
   useEffect(() => {
-    if (promotionCard?.interactions?.like) {
-      setLikesAmount(promotionCard.interactions.like)
+    if (promotionCard?.promotionInteractions?.like) {
+      setLikesAmount(promotionCard.promotionInteractions.like)
     }
+    if (promotionCard?.promotionInteractions?.favorite) {
+      setFavoritedAmount(promotionCard.promotionInteractions.favorite)
+    }
+    setLiked(promotionCard?.promotionUserInteractions?.like || false)
+    setFavorited(promotionCard?.promotionUserInteractions?.favorite || false)
   }, [promotionCard])
 
   function handleFavoritePromotion() {
     setFavorited(true)
+    setFavoritedAmount(favoritedAmount + 1)
   }
 
   function handleUnfavoritePromotion() {
     setFavorited(false)
+    setFavoritedAmount(favoritedAmount - 1)
   }
 
   function handleLikePromotion() {
@@ -138,13 +146,18 @@ export default function Promotion() {
                 </div>
                 <div className="flex items-center gap-6">
                   <button
-                    className={` ${favorited ? 'text-red-500' : 'border-slate-200'} transition-colors duration-200`}
+                    className={`flex items-center gap-1 rounded-sm border px-1 text-lg ${
+                      favorited
+                        ? 'border-red-500 text-red-500'
+                        : 'border-slate-200'
+                    } transition-colors duration-200`}
                     onClick={
                       favorited
                         ? handleUnfavoritePromotion
                         : handleFavoritePromotion
                     }
                   >
+                    {favoritedAmount}
                     <Heart size={20} fill={`${favorited ? 'red' : ''}`} />
                   </button>
 
@@ -167,7 +180,7 @@ export default function Promotion() {
           </div>
           <div className="flex flex-col rounded-sm border border-gray-700 bg-gray-800 px-6 py-2">
             <p className="text-xl-">
-              {promotionCard?.interactions?.comment} comentários
+              {promotionCard?.promotionInteractions?.comment} comentários
             </p>
             <div className="mb-2 flex w-full flex-col">
               <div className="mt-2 flex w-full items-center gap-2">

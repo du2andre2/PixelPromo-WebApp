@@ -1,5 +1,5 @@
-import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
-import { useState } from 'react'
+import { ExternalLink, ThumbsUp, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { PromotionCard } from '@/api/get-promotion'
@@ -13,7 +13,7 @@ export default function WishListItem({ promotionCard }: PromotionProps) {
   const [liked, setLiked] = useState<boolean>(false)
   const [favorited, setFavorited] = useState<boolean>(false)
   const [likesAmount, setLikesAmount] = useState<number>(
-    promotionCard.interactions.like,
+    promotionCard.promotionInteractions?.like || 0,
   )
 
   function handleFavoritePromotion() {
@@ -33,6 +33,13 @@ export default function WishListItem({ promotionCard }: PromotionProps) {
     setLiked(false)
     setLikesAmount(likesAmount - 1)
   }
+
+  useEffect(() => {
+    // Set initial state based on the promotionCard data when component mounts
+    setLiked(promotionCard.promotionUserInteractions?.like || false)
+    setFavorited(promotionCard.promotionUserInteractions?.favorite || false)
+    setLikesAmount(promotionCard.promotionInteractions.like)
+  }, [promotionCard])
 
   return (
     <div className="flex h-32 w-full justify-between rounded-sm border border-gray-700 bg-gray-800">
@@ -80,12 +87,14 @@ export default function WishListItem({ promotionCard }: PromotionProps) {
           </p>
           <div className="flex items-center gap-2">
             <button
-              className={` ${favorited ? 'text-red-700' : 'border-slate-200'} transition-colors duration-200`}
+              className={` ${
+                favorited ? 'text-red-700' : 'border-slate-200'
+              } transition-colors duration-200`}
               onClick={
                 favorited ? handleUnfavoritePromotion : handleFavoritePromotion
               }
             >
-              <Heart size={16} />
+              <Trash2 size={16} />
             </button>
 
             <button

@@ -1,8 +1,10 @@
 import { api } from '@/lib/axios'
 
-import { InteractionsStatistics } from './get-interaction'
+import {
+  PromotionInteractionsStatistics,
+  PromotionUserInteractionsStatistics,
+} from './get-interaction'
 import { User } from './get-user'
-import { log } from 'console'
 
 export interface Promotion {
   id: string
@@ -23,7 +25,8 @@ export interface Promotion {
 export interface PromotionCard {
   promotion: Promotion
   user: User
-  interactions: InteractionsStatistics
+  promotionInteractions: PromotionInteractionsStatistics
+  promotionUserInteractions: PromotionUserInteractionsStatistics
 }
 
 export async function getPromotion(promotionId: string | undefined) {
@@ -35,14 +38,22 @@ export async function getPromotion(promotionId: string | undefined) {
     `/users/${promotionResponse.data.userId}`,
   )
 
-  const response = await api.get<InteractionsStatistics>(
-    `/interactions/statistics/${promotionResponse.data.id}`,
-  )
+  const promotionInteractionsresponse =
+    await api.get<PromotionInteractionsStatistics>(
+      `/interactions/statistics/${promotionResponse.data.id}`,
+    )
+
+  const userID = '1' // TODO: get user id from auth
+  const promotionUserInteractionsresponse =
+    await api.get<PromotionUserInteractionsStatistics>(
+      `/interactions/promotion-user-statistics?userID=${userID}&promotionID=${promotionResponse.data.id}`,
+    )
 
   const promotionCard = {
     promotion: promotionResponse.data,
     user: userResponse.data,
-    interactions: response.data,
+    promotionInteractions: promotionInteractionsresponse.data,
+    promotionUserInteractions: promotionUserInteractionsresponse.data,
   }
 
   return promotionCard

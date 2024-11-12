@@ -1,6 +1,6 @@
 import { api } from '@/lib/axios'
 
-import type { InteractionsStatistics } from './get-interaction'
+import type { PromotionInteractionsStatistics, PromotionUserInteractionsStatistics } from './get-interaction'
 import type { Promotion, PromotionCard } from './get-promotion'
 import type { User } from './get-user'
 
@@ -29,22 +29,28 @@ export async function fetchPromotions({
         }
       })
       return searchParams.toString()
-    }
+    },
   })
+
+  const userID = '1' // TODO: obter ID do usuário autenticado
 
   const promotionCards = await Promise.all(
     response.data.map(async (promotion) => {
-      const [userResponse, interactionsResponse] = await Promise.all([
-        api.get<User>(`/users/${promotion.userId}`),
-        api.get<InteractionsStatistics>(
-          `/interactions/statistics/${promotion.id}`,
-        ),
-      ])
+      const [userResponse, interactionsResponse, userInteractionsResponse] = await Promise.all([
+          api.get<User>(`/users/${promotion.userId}`),
+          api.get<PromotionInteractionsStatistics>(
+            `/interactions/statistics/${promotion.id}`,
+          ),
+          api.get<PromotionUserInteractionsStatistics>(
+            `/interactions/promotion-user-statistics?userID=${userID}&promotionID=${promotion.id}`,
+          ),
+        ])
 
       return {
         promotion,
         user: userResponse.data,
-        interactions: interactionsResponse.data,
+        promotionInteractions: interactionsResponse.data,
+        promotionUserInteractions: userInteractionsResponse.data,
       } as PromotionCard
     }),
   )
