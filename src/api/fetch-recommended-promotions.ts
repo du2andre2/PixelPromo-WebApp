@@ -1,6 +1,9 @@
 import { api } from '@/lib/axios'
 
-import type { PromotionInteractionsStatistics, PromotionUserInteractionsStatistics } from './get-interaction'
+import type {
+  PromotionInteractionsStatistics,
+  PromotionUserInteractionsStatistics,
+} from './get-interaction'
 import type { Promotion, PromotionCard } from './get-promotion'
 import type { User } from './get-user'
 
@@ -15,7 +18,8 @@ export async function fetchRecommendedPromotions(): Promise<PromotionCard[]> {
 
   const promotionCards = await Promise.all(
     response.data.map(async (promotion) => {
-      const [userResponse, interactionsResponse, userInteractionsResponse] = await Promise.all([
+      const [userResponse, interactionsResponse, userInteractionsResponse] =
+        await Promise.all([
           api.get<User>(`/users/${promotion.userId}`),
           api.get<PromotionInteractionsStatistics>(
             `/interactions/statistics/${promotion.id}`,

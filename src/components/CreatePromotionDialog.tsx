@@ -1,7 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+
+import { createPromotion } from '@/api/create-promotion'
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
@@ -40,6 +43,10 @@ export default function CreatePromotionDialog() {
       resolver: zodResolver(createPromotionSchema),
     },
   )
+
+  const { mutateAsync: createPromotionFn } = useMutation({
+    mutationFn: createPromotion,
+  })
 
   const [preview, setPreview] = useState<string | null>(null)
 
@@ -81,8 +88,16 @@ export default function CreatePromotionDialog() {
     }
   }
 
-  function handleCreatePromotion(data: CreatePromotionFormData) {
-    console.log(data)
+  async function handleCreatePromotion(data: CreatePromotionFormData) {
+    await createPromotionFn({
+      gameName: data.gameName,
+      gameDiscount: data.gameDiscount,
+      gamePlatform: data.gamePlatform,
+      gamePrice: data.gamePrice,
+      gamePriceWithDiscount: data.gamePriceWithDiscount,
+      gameURL: data.gameURL,
+      promotionImage: data.promotionImage,
+    })
   }
 
   return (

@@ -35,7 +35,6 @@ export default function WishListItem({ promotionCard }: PromotionProps) {
   }
 
   useEffect(() => {
-    // Set initial state based on the promotionCard data when component mounts
     setLiked(promotionCard.promotionUserInteractions?.like || false)
     setFavorited(promotionCard.promotionUserInteractions?.favorite || false)
     setLikesAmount(promotionCard.promotionInteractions.like)
