@@ -27,7 +27,7 @@ export async function getPromotionInteraction(promotionId: string | undefined) {
 }
 
 export async function getUserInteraction(userId: string | undefined) {
-  const response = await api.get<PromotionInteractionsStatistics>(
+  const response = await api.get<UserInteractionsStatistics>(
     `/interactions/user-statistics/${userId}`,
   )
 
@@ -38,7 +38,7 @@ export async function getPromotionUserInteraction(
   promotionId: string | undefined,
   userId: string | undefined,
 ) {
-  const response = await api.get<PromotionInteractionsStatistics>(
+  const response = await api.get<PromotionUserInteractionsStatistics>(
     `/interactions/promotion-user-statistics?userID=${userId}&promotionID=${promotionId}`,
   )
 
