@@ -1,5 +1,6 @@
 import { RankingCard } from '@/api/get-ranking'
-import userImg from '@/assets/user-img.jpg'
+import userDefault from '@/assets/user-default.png'
+import { Link } from 'react-router-dom'
 
 interface RankItemProps {
   rankingCard: RankingCard
@@ -21,11 +22,18 @@ export default function RankItem({ rankingCard }: RankItemProps) {
       </div>
       <div className="flex flex-1 justify-between">
         <div className="flex items-center gap-2">
+        <Link to={`/user/${rankingCard.user.id}`} >
           <img
-            src={rankingCard.user.pictureUrl || userImg}
+            src={
+              rankingCard.user.pictureUrl
+                ? `${rankingCard.user.pictureUrl}?timestamp=${new Date().getTime()}`
+                : userDefault
+            }
             alt="Imagem de perfil do usuário"
-            className="h-12 items-center rounded-full"
+            className="h-12 w-12 object-cover rounded-full"
           />
+          </Link>
+          
           <div className="flex flex-col">
             <p className="text-lg">{rankingCard.user.name}</p>
             <p className="text-sm">

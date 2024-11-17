@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from '@tanstack/react-query'
 import { Filter } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
+import Cookies from 'js-cookie'
 
 import { fetchCategories } from '@/api/fetch-categories'
 import { fetchPromotions } from '@/api/fetch-promotions'
@@ -15,26 +17,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Auth } from '@/api/login'
+import { getUser } from '@/api/get-user'
 
 export default function Home() {
+
+  const authString = Cookies.get('auth'); 
+  const auth: Auth | undefined = authString ? JSON.parse(authString) : undefined;
+
+  if (!auth || !auth.token || !auth.userId) {
+    window.location.href = '/sign-in';
+    return null;  
+  }
+
+  const { data: authUserCard} = useQuery({
+    queryKey: ['userQuery', auth.userId],
+    queryFn: () => getUser({ userId: auth.userId ,auth: auth}),
+    enabled: !!auth.userId,
+  });
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [searchParams, setSearchParams] = useSearchParams()
   const promotionName = searchParams.get('promotionName') || ''
 
   const { data: categoriesQuery } = useQuery({
     queryKey: ['categoriesQuery'],
-    queryFn: fetchCategories,
+    queryFn: () => fetchCategories({ auth: auth }),
   })
 
   const { data: recommededPromotions } = useQuery({
     queryKey: ['recommededPromotions'],
-    queryFn: fetchRecommendedPromotions,
+    queryFn: () => fetchRecommendedPromotions({ auth: auth }),
   })
 
   const promotionsQuery = useQuery({
     queryKey: ['promotionsQuery', selectedCategories, promotionName],
     queryFn: () =>
       fetchPromotions({
+        auth: auth,
         category:
           selectedCategories.length > 0 ? selectedCategories : undefined,
         search: promotionName,
@@ -42,7 +62,6 @@ export default function Home() {
   })
 
   useEffect(() => {
-    // Atualiza a consulta sempre que searchParams ou selectedCategories mudarem
     promotionsQuery.refetch()
   }, [searchParams, selectedCategories])
 
@@ -68,13 +87,14 @@ export default function Home() {
     <>
       <Helmet title="Home" />
       <div className="flex w-app flex-col space-y-4 text-slate-200">
-        <h1 className="mt-4 text-3xl font-bold">Jogos recomendados</h1>
+        <h1 className="mt-4 text-3xl font-bold">Jogos recomendados para {authUserCard?.user.name}</h1>
         <div className="flex justify-between">
           {recommededPromotions &&
             recommededPromotions.map((promotion) => (
               <GameCard
                 key={promotion.promotion.id}
                 promotionCard={promotion}
+                auth={auth}
               />
             ))}
         </div>
@@ -121,6 +141,7 @@ export default function Home() {
               <GameCard
                 key={promotion.promotion.id}
                 promotionCard={promotion}
+                auth={auth}
               />
             ))
           ) : (

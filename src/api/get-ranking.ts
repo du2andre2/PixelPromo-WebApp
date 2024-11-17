@@ -2,6 +2,7 @@ import { api } from '@/lib/axios'
 
 import type { UserInteractionsStatistics } from './get-interaction'
 import type { User } from './get-user'
+import { Auth } from './login'
 
 export interface RankingCard {
   user: User
@@ -9,14 +10,26 @@ export interface RankingCard {
   index: number
 }
 
-export async function getRankingList(): Promise<RankingCard[]> {
-  const response = await api.get<User[]>(`/users/rank?limit=7`)
+export interface getRankingListProps {
+  auth: Auth
+}
+
+export async function getRankingList({auth}:getRankingListProps): Promise<RankingCard[]> {
+  const response = await api.get<User[]>(`/users/rank?limit=7`,{
+    headers: {
+      Authorization: `Bearer ${auth.token}`,
+    },
+  }) 
 
   const rankingList = await Promise.all(
     response.data.map(async (user) => {
       const [interactionsResponse] = await Promise.all([
         api.get<UserInteractionsStatistics>(
-          `/interactions/user-statistics/${user.id}`,
+          `/interactions/user-statistics/${user.id}`,{
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
         ),
       ])
 

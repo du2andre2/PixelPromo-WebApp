@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
+import Cookies from 'js-cookie'
+import { login } from '@/api/login'
 
 const loginFormSchema = z.object({
   email: z.string().email('Insira um email válido'),
@@ -25,8 +27,25 @@ export default function SignIn() {
     },
   })
 
-  function handleLogin(data: LoginFormData) {
-    console.log(data)
+  const auth = Cookies.get('auth');
+  if (auth) {
+    window.location.href = '/home'; 
+    return null;
+  }
+
+  async function handleLogin(data: LoginFormData) {
+    try {
+      const user = await login(data); 
+      
+      if (user) {
+        console.log('Usuário logado:', user);
+        window.location.href = '/home';
+      } else {
+        console.log('Credenciais inválidas');
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+    }
   }
 
   return (

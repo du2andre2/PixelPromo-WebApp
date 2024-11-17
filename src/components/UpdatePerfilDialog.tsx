@@ -1,53 +1,98 @@
+import { UserCard } from '@/api/get-user'
+import { Auth } from '@/api/login'
+import { updateUser } from '@/api/update-user'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { Camera } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
 
+// Esquema de validação para o campo de imagem
 const fileSchema = z
-  .instanceof(File)
-  .optional()
-  .refine(
-    (file) => {
-      if (!file) return true
-      console.log('Tipo MIME do arquivo:', file.type)
-      return (
-        file.size <= MAX_UPLOAD_SIZE &&
-        ['image/png', 'image/jpeg', 'image/pjpeg'].includes(file.type)
-      )
-    },
-    {
-      message: 'O arquivo deve ser PNG ou JPG e ter no máximo 3MB',
-    },
-  )
-
-const updatePerfilFormSchema = z.object({
-  userImage: fileSchema,
-  name: z.string().min(2).optional(),
+.custom<File>((value) => value instanceof File, {
+  message: 'O arquivo deve ser uma instância válida de File',
 })
+.refine(
+  (file) =>
+    file &&
+    file.size <= MAX_UPLOAD_SIZE &&
+    ['image/png', 'image/jpeg'].includes(file.type),
+  {
+    message: 'O arquivo deve ser PNG ou JPG e ter no máximo 3MB',
+  }
+).optional()
 
-type UpdatePerfilData = z.infer<typeof updatePerfilFormSchema>
-
-export default function UpdatePerfilDialog() {
-  const [preview, setPreview] = useState<string | null>(null)
-
-  const { register, handleSubmit } = useForm<UpdatePerfilData>({
-    resolver: zodResolver(updatePerfilFormSchema),
+const updatePerfilFormSchema = z
+  .object({
+    userImage: fileSchema,
+    name: z.string().optional(),
   })
+  .superRefine((data, ctx) => {
+    // Verifica se ambos os campos estão vazios
+    if (!data.userImage && !data.name) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Pelo menos um campo deve ser preenchido.',
+        path: ['name'], // O erro será associado ao campo "name"
+      });
+    }
+  });
+  
+
+type UpdatePerfilData = z.infer<typeof updatePerfilFormSchema>;
+
+interface UpdatePerfilDialogProps {
+  auth: Auth;
+  userCard: UserCard;
+  onClose: () => void;
+}
+
+export default function UpdatePerfilDialog({
+  auth,
+  userCard,
+  onClose,
+}: UpdatePerfilDialogProps) {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    formState: { errors },
+  } = useForm<UpdatePerfilData>({
+    resolver: zodResolver(updatePerfilFormSchema),
+  });
+
+  const { mutateAsync: updateUserFn } = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      onClose();
+    },
+  });
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0] ?? undefined;
     if (file) {
-      setPreview(URL.createObjectURL(file))
+      setValue('userImage', file, { shouldValidate: true }); 
+    }
+    if (file) {
+      setPreview(URL.createObjectURL(file));
     } else {
-      setPreview(null)
+      setPreview(null);
     }
   }
 
-  function handleUpdatePerfil(data: UpdatePerfilData) {
-    console.log(data)
+  async function handleUpdatePerfil(data: UpdatePerfilData) {
+    userCard.user.name = data.name || userCard.user.name;
+
+    await updateUserFn({
+      auth: auth,
+      user: userCard.user,
+      image: data.userImage || null,
+    });
   }
 
   return (
@@ -56,7 +101,6 @@ export default function UpdatePerfilDialog() {
       onSubmit={handleSubmit(handleUpdatePerfil)}
     >
       <label className="relative flex h-24 w-24 cursor-pointer items-center justify-center rounded-full border border-gray-200 hover:border-gray-400">
-        {' '}
         {preview ? (
           <img
             src={preview}
@@ -68,22 +112,25 @@ export default function UpdatePerfilDialog() {
         )}
         <input
           type="file"
-          {...register('userImage')}
-          onChange={handleFileChange}
+          onChange={handleFileChange} 
           className="absolute inset-0 cursor-pointer opacity-0"
-          required
         />
       </label>
-
+      {errors.userImage && (
+          <p className="text-red-500">{errors.userImage.message}</p>
+        )}
       <div className="flex flex-1 flex-col gap-1">
         <label>Novo nome</label>
         <input
           type="text"
           className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
           {...register('name')}
-          required
         />
+        {errors.name && (
+          <p className="text-red-500">{errors.name.message}</p>
+        )}
       </div>
+
       <button
         type="submit"
         className="w-full rounded-md bg-green-500 py-2 text-white hover:bg-green-700"
@@ -91,5 +138,5 @@ export default function UpdatePerfilDialog() {
         Atualizar perfil
       </button>
     </form>
-  )
+  );
 }

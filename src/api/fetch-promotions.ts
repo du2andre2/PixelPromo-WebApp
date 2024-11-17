@@ -6,20 +6,30 @@ import type {
 } from './get-interaction'
 import type { Promotion, PromotionCard } from './get-promotion'
 import type { User } from './get-user'
+import { Auth } from './login'
 
-interface GetPromotionsQuery {
+interface fetchPromotionsProps {
   category?: string[]
   search?: string
+  userId?: string
+  auth: Auth
 }
 
 export async function fetchPromotions({
   category,
   search,
-}: GetPromotionsQuery): Promise<PromotionCard[]> {
-  const response = await api.get<Promotion[]>('/promotions', {
+  userId,
+  auth,
+}: fetchPromotionsProps): Promise<PromotionCard[]> { 
+  const response = await api.get<Promotion[]>('/promotions',
+   {
+    headers: {
+      Authorization: `Bearer ${auth.token}`,
+    },
     params: {
       category,
       title: search,
+      userId,
     },
     paramsSerializer: (params) => {
       const searchParams = new URLSearchParams()
@@ -35,18 +45,31 @@ export async function fetchPromotions({
     },
   })
 
-  const userID = '1' // TODO: obter ID do usuário autenticado
-
   const promotionCards = await Promise.all(
     response.data.map(async (promotion) => {
       const [userResponse, interactionsResponse, userInteractionsResponse] =
         await Promise.all([
-          api.get<User>(`/users/${promotion.userId}`),
+          api.get<User>(`/users/${promotion.userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${auth.token}`,
+              },
+            }),
           api.get<PromotionInteractionsStatistics>(
             `/interactions/statistics/${promotion.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${auth.token}`,
+              },
+            }
           ),
           api.get<PromotionUserInteractionsStatistics>(
-            `/interactions/promotion-user-statistics?userID=${userID}&promotionID=${promotion.id}`,
+            `/interactions/promotion-user-statistics?userId=${auth.userId}&promotionId=${promotion.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${auth.token}`,
+              },
+            }
           ),
         ])
 

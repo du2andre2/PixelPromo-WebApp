@@ -3,12 +3,16 @@ import { useQuery } from '@tanstack/react-query'
 import { getWishList } from '@/api/get-wish-list'
 
 import WishListItem from './WishListItem'
+import { Auth } from '@/api/login'
 
-export default function WishList() {
-  const userId = '1' // TODO: implement session
-  const { data: wishListQuery } = useQuery({
-    queryKey: ['wishListQuery', userId],
-    queryFn: () => getWishList(userId),
+interface WishListProps { 
+  auth: Auth
+}
+
+export default function WishList({ auth }: WishListProps) {
+  const { data: wishListQuery,refetch :refetchWishList } = useQuery({
+    queryKey: ['wishListQuery', auth.userId],
+    queryFn: () => getWishList({userId:auth.userId,auth: auth}),
   })
 
   return (
@@ -18,6 +22,8 @@ export default function WishList() {
           <WishListItem
             key={promotionCard.promotion.id}
             promotionCard={promotionCard}
+            onDeleteFavoriteItem={ refetchWishList }
+            auth={auth}
           />
         ))}
     </div>

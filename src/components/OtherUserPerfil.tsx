@@ -8,26 +8,38 @@ import diamondBadge from '@/assets/diamante final.png'
 import goldBadge from '@/assets/ouro final.png'
 import platinumBadge from '@/assets/platina final.png'
 import silverBadge from '@/assets/prata final.png'
-import userImg from '@/assets/user-img.jpg'
+import userDefault from '@/assets/user-default.png'
 
 import PublishedOffersTable from './PublishedOffersTable'
 import RankItem from './RankItem'
+import { Auth } from '@/api/login'
+import { fetchPromotions } from '@/api/fetch-promotions'
+import { PromotionCard } from '@/api/get-promotion'
 
-export default function OtherUserPerfil() {
+interface OtherUserPerfilProps {
+  auth: Auth
+}
+
+export default function OtherUserPerfil({ auth }: OtherUserPerfilProps) {
   const { id } = useParams()
 
+  const { data: promotionsList } = useQuery({
+    queryKey: ['promotionsQuery', id],
+    queryFn: () => fetchPromotions({ userId: id ,auth: auth}),
+  });
+
   const { data: rankingList } = useQuery({
-    queryKey: ['rankingQuery'],
-    queryFn: getRankingList,
-  })
-
-  const { data: userCard } = useQuery({
+    queryKey: ['rankingQuery', id],
+    queryFn: () => getRankingList({ auth: auth}),
+  });
+  
+  const { data: userCard} = useQuery({
     queryKey: ['userQuery', id],
-    queryFn: () => getUser(id),
+    queryFn: () => getUser({ userId: id ,auth: auth}),
     enabled: !!id,
-  })
+  });
 
-  const getBadgeImage = (elo: string | undefined) => {
+  function getBadgeImage(elo: string | undefined) {
     switch (elo) {
       case 'bronze':
         return bronzeBadge
@@ -52,9 +64,9 @@ export default function OtherUserPerfil() {
             <div className="flex flex-1 items-center justify-center gap-6">
               <div>
                 <img
-                  src={userCard?.user.pictureUrl || userImg}
+                  src={userCard?.user.pictureUrl || userDefault}
                   alt="Imagem do usuário"
-                  className="h-20 rounded-full"
+                  className="h-20 w-20 object-cover rounded-full"
                 />
               </div>
               <div className="flex flex-col gap-1">
@@ -85,7 +97,11 @@ export default function OtherUserPerfil() {
           <div className="flex items-center justify-between">
             <p className="text-2xl font-semibold">Minhas Ofertas</p>
           </div>
-          <PublishedOffersTable />
+          <PublishedOffersTable 
+            auth={auth}
+            promotions={promotionsList as PromotionCard[]} 
+            onDelete={() => {}}
+          />
         </div>
         <div className="flex basis-1/4 flex-col rounded-sm border border-gray-700 bg-gray-800 px-2 py-4">
           <p className="flex items-center justify-center text-2xl font-semibold">

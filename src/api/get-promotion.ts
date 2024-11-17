@@ -5,21 +5,20 @@ import {
   PromotionUserInteractionsStatistics,
 } from './get-interaction'
 import { User } from './get-user'
+import { Auth } from './login'
 
 export interface Promotion {
-  id: string
+  id?: string
   userId: string
   title: string
-  description: string
-  originalPrice: string
-  discountedPrice: string
-  discountBadge: string
+  originalPrice: number
+  discountedPrice: number
+  discountBadge?: number
   platform: string
-  imageUrl: string
+  imageUrl?: string
   link: string
   categories: string[]
-  createdAt: string
-  likes: number
+  createdAt?: string
 }
 
 export interface PromotionCard {
@@ -29,24 +28,44 @@ export interface PromotionCard {
   promotionUserInteractions: PromotionUserInteractionsStatistics
 }
 
-export async function getPromotion(promotionId: string | undefined) {
-  const promotionResponse = await api.get<Promotion>(
-    `/promotions/${promotionId}`,
+export interface getPromotionProps {
+  promotionId: string | undefined
+  auth: Auth
+}
+
+export async function getPromotion({ promotionId, auth }: getPromotionProps) {
+  const promotionResponse = await api.get<Promotion>( 
+    `/promotions/${promotionId}`,{
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }
   )
 
   const userResponse = await api.get<User>(
-    `/users/${promotionResponse.data.userId}`,
+    `/users/${promotionResponse.data.userId}`,{
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }
   )
 
   const promotionInteractionsresponse =
     await api.get<PromotionInteractionsStatistics>(
-      `/interactions/statistics/${promotionResponse.data.id}`,
+      `/interactions/statistics/${promotionResponse.data.id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
     )
 
-  const userID = '1' // TODO: get user id from auth
   const promotionUserInteractionsresponse =
     await api.get<PromotionUserInteractionsStatistics>(
-      `/interactions/promotion-user-statistics?userID=${userID}&promotionID=${promotionResponse.data.id}`,
+      `/interactions/promotion-user-statistics?userId=${auth.userId}&promotionId=${promotionResponse.data.id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
     )
 
   const promotionCard = {

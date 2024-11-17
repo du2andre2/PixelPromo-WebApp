@@ -1,31 +1,34 @@
 import { api } from '@/lib/axios'
+import { Promotion } from './get-promotion'
+import { Auth } from './login';
 
-export interface CreatePromotionBody {
-  promotionImage: undefined | File
-  gameName: string
-  gamePrice: string
-  gamePriceWithDiscount: string
-  gameDiscount: string
-  gamePlatform: string
-  gameURL: string
+export interface createPromotionProps {
+  promotion: Promotion
+  image: File
+  auth: Auth
 }
 
 export async function createPromotion({
-  gameName,
-  gameDiscount,
-  gamePlatform,
-  gamePrice,
-  gamePriceWithDiscount,
-  gameURL,
-  promotionImage,
-}: CreatePromotionBody) {
-  await api.post('/promotions', {
-    gameName,
-    gameDiscount,
-    gamePlatform,
-    gamePrice,
-    gamePriceWithDiscount,
-    gameURL,
-    promotionImage,
+  promotion,
+  image,
+  auth,
+}: createPromotionProps) {
+  const response = await api.post<Promotion>(
+    '/promotions', 
+    promotion,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }
+  ) 
+
+  const formData = new FormData()
+  formData.append('image', image)
+
+  await api.post(`/promotions/image/${response.data.id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
 }

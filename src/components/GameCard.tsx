@@ -1,14 +1,18 @@
 import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import userDefault from '@/assets/user-default.png'
 
 import type { PromotionCard } from '@/api/get-promotion'
+import { createInteraction } from '@/api/create-interaction'
+import { Auth } from '@/api/login'
 
 interface PromotionProps {
   promotionCard: PromotionCard
+  auth: Auth
 }
 
-export default function GameCard({ promotionCard }: PromotionProps) {
+export default function GameCard({ promotionCard,auth }: PromotionProps) {
   const [liked, setLiked] = useState<boolean>(
     promotionCard.promotionUserInteractions?.like || false,
   )
@@ -23,31 +27,82 @@ export default function GameCard({ promotionCard }: PromotionProps) {
   )
 
   useEffect(() => {
-    // Set initial state based on the promotionCard data when component mounts
     setLiked(promotionCard.promotionUserInteractions?.like || false)
     setFavorited(promotionCard.promotionUserInteractions?.favorite || false)
     setLikesAmount(promotionCard.promotionInteractions.like)
     setFavoritedAmount(promotionCard.promotionInteractions.favorite)
   }, [promotionCard])
 
-  function handleFavoritePromotion() {
-    setFavorited(true)
-    setFavoritedAmount(favoritedAmount + 1)
+  async function handleFavoritePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'favorite',
+        },
+        auth: auth,
+      });
+      setFavorited(true)
+      setFavoritedAmount(favoritedAmount + 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+    
   }
 
-  function handleUnfavoritePromotion() {
-    setFavorited(false)
-    setFavoritedAmount(favoritedAmount - 1)
+  async function handleUnfavoritePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'favorite',
+        },
+        auth: auth,
+      });
+      setFavorited(false)
+      setFavoritedAmount(favoritedAmount - 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+   
   }
 
-  function handleLikePromotion() {
-    setLiked(true)
-    setLikesAmount(likesAmount + 1)
+  async function handleLikePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'like',
+        },
+        auth: auth,
+      });
+      setLiked(true)
+      setLikesAmount(likesAmount + 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+   
   }
 
-  function handleUnlikePromotion() {
-    setLiked(false)
-    setLikesAmount(likesAmount - 1)
+  async function handleUnlikePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'like',
+        },
+        auth: auth,
+      });
+      setLiked(false)
+      setLikesAmount(likesAmount - 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+    
   }
 
   return (
@@ -80,11 +135,13 @@ export default function GameCard({ promotionCard }: PromotionProps) {
             <div className="basis-1/4">{promotionCard.promotion.title}</div>
           </div>
           <div className="mb-2 flex basis-1/5 items-end justify-end">
+          <Link to={`/user/${promotionCard.user.id}`} >
             <img
-              src={promotionCard.user.pictureUrl}
+              src={promotionCard.user.pictureUrl || userDefault}
               alt="Imagem do usuário"
-              className="rounded-full"
+              className="h-8 w-8 object-cover rounded-full"
             />
+          </Link>
           </div>
         </div>
         <div className="flex basis-1/5 items-center justify-between">

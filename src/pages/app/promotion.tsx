@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
@@ -6,11 +7,16 @@ import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import { z } from 'zod'
+import userDefault from '@/assets/user-default.png'
 
 import { fetchPromotionComments } from '@/api/fetch-promotion-comments'
 import { fetchRecommendedPromotions } from '@/api/fetch-recommended-promotions'
 import { getPromotion } from '@/api/get-promotion'
 import GameCard from '@/components/GameCard'
+import { createInteraction } from '@/api/create-interaction'
+import Cookies from 'js-cookie'
+import { Auth } from '@/api/login'
+import { getUser } from '@/api/get-user'
 
 const commentFormSchema = z.object({
   comment: z.string().min(2),
@@ -19,30 +25,45 @@ const commentFormSchema = z.object({
 type CommentFormData = z.infer<typeof commentFormSchema>
 
 export default function Promotion() {
+  
+  const authString = Cookies.get('auth'); 
+  const auth: Auth | undefined = authString ? JSON.parse(authString) : undefined;
+
+  if (!auth || !auth.token || !auth.userId) {
+    window.location.href = '/sign-in';
+    return null;  
+  }
+
+  const { data: authUserCard} = useQuery({
+    queryKey: ['userQuery', auth.userId],
+    queryFn: () => getUser({ userId: auth.userId ,auth: auth}),
+    enabled: !!auth.userId,
+  });
+  
   const { id } = useParams()
 
   const { data: promotionCard } = useQuery({
     queryKey: ['promotionQuery', id],
-    queryFn: () => getPromotion(id),
+    queryFn: () => getPromotion({ promotionId: id, auth: auth }),
     enabled: !!id,
   })
 
-  const { data: promotionComments } = useQuery({
+  const { data: promotionComments, refetch: refetchComments } = useQuery({
     queryKey: ['promotionComments', id],
-    queryFn: () => fetchPromotionComments(id),
+    queryFn: () => fetchPromotionComments({ promotionId: id, auth: auth }),
     enabled: !!id,
   })
 
-  const { handleSubmit, register } = useForm<CommentFormData>({
+  const { handleSubmit, register, reset } = useForm<CommentFormData>({
     resolver: zodResolver(commentFormSchema),
     defaultValues: {
       comment: '',
     },
-  })
+  });
 
   const { data: recommededPromotions } = useQuery({
     queryKey: ['recommededPromotions'],
-    queryFn: fetchRecommendedPromotions,
+    queryFn: () => fetchRecommendedPromotions({  auth: auth }),
   })
 
   const [liked, setLiked] = useState<boolean>(false)
@@ -61,29 +82,98 @@ export default function Promotion() {
     setFavorited(promotionCard?.promotionUserInteractions?.favorite || false)
   }, [promotionCard])
 
-  function handleFavoritePromotion() {
-    setFavorited(true)
-    setFavoritedAmount(favoritedAmount + 1)
+  async function handleCommentOnPromotion(data: CommentFormData) {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard?.promotion.id || '',
+          userId: authUserCard?.user.id || '',
+          interactionType: 'comment',
+          comment: data.comment,
+        },
+        auth: auth!,
+      });
+      refetchComments()
+      reset();
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+    
   }
 
-  function handleUnfavoritePromotion() {
-    setFavorited(false)
-    setFavoritedAmount(favoritedAmount - 1)
+  async function handleFavoritePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard?.promotion.id || '',
+          userId: authUserCard?.user.id || '',
+          interactionType: 'favorite',
+        },
+        auth: auth!,
+      });
+      setFavorited(true)
+      setFavoritedAmount(favoritedAmount + 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+    
   }
 
-  function handleLikePromotion() {
-    setLiked(true)
-    setLikesAmount(likesAmount + 1)
+  async function handleUnfavoritePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard?.promotion.id || '',
+          userId: authUserCard?.user.id || '',
+          interactionType: 'favorite',
+        },
+        auth: auth!,
+      });
+      setFavorited(false)
+      setFavoritedAmount(favoritedAmount - 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+   
   }
 
-  function handleUnlikePromotion() {
-    setLiked(false)
-    setLikesAmount(likesAmount - 1)
+  async function handleLikePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard?.promotion.id || '',
+          userId: authUserCard?.user.id || '',
+          interactionType: 'like',
+        },
+        auth: auth!,
+      });
+      setLiked(true)
+      setLikesAmount(likesAmount + 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+   
   }
 
-  function handleCommentOnPromotion(data: CommentFormData) {
-    console.log(data)
+  async function handleUnlikePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard?.promotion.id || '',
+          userId: authUserCard?.user.id || '',
+          interactionType: 'like',
+        },
+        auth: auth!,
+      });
+      setLiked(false)
+      setLikesAmount(likesAmount - 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
   }
+
+
+
 
   return (
     <>
@@ -136,11 +226,13 @@ export default function Promotion() {
               <div className="mt-2 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex h-10">
-                    <img
-                      src={promotionCard?.user?.pictureUrl}
-                      alt="Imagem do usuário"
-                      className="rounded-full"
-                    />
+                    <Link to={`/user/${promotionCard?.user?.id}`} >
+                      <img
+                        src={promotionCard?.user?.pictureUrl || userDefault}
+                        alt="Imagem do usuário"
+                        className="h-10 w-10 object-cover rounded-full"
+                      />
+                    </Link>
                   </div>
                   <p>{promotionCard?.user?.name}</p>
                 </div>
@@ -186,9 +278,9 @@ export default function Promotion() {
               <div className="mt-2 flex w-full items-center gap-2">
                 <div>
                   <img
-                    src={promotionCard?.user?.pictureUrl}
+                    src={authUserCard?.user.pictureUrl || userDefault} 
                     alt="Imagem do usuário"
-                    className="w-12 rounded-full"
+                    className="h-10 w-10 object-cover rounded-full"
                   />
                 </div>
                 <div className="flex h-full w-full flex-col">
@@ -198,7 +290,7 @@ export default function Promotion() {
                   >
                     <input
                       type="text"
-                      {...register}
+                      {...register('comment')}
                       placeholder="Adicione um comentário..."
                       className="w-full border-b border-slate-100 bg-transparent text-sm"
                     />
@@ -220,11 +312,13 @@ export default function Promotion() {
                     key={commentCard.comment.id}
                   >
                     <div>
+                    <Link to={`/user/${promotionCard?.user?.id}`} >
                       <img
-                        src={commentCard.user.pictureUrl}
+                        src={commentCard.user.pictureUrl || userDefault}
                         alt="Imagem do usuário"
-                        className="w-12 rounded-full"
+                        className="h-12 w-12 object-cover rounded-full"
                       />
+                    </Link>
                     </div>
                     <div className="flex h-full w-full flex-col">
                       <div className="flex w-full flex-col px-2">
@@ -244,6 +338,7 @@ export default function Promotion() {
               <GameCard
                 key={promotion.promotion.id}
                 promotionCard={promotion}
+                auth={auth}
               />
             ))}
         </div>

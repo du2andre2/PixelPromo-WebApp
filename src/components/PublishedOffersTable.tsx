@@ -7,8 +7,17 @@ import {
 } from '@/components/ui/table'
 
 import { PublishedOfferRow } from './TableRow'
+import { PromotionCard } from '@/api/get-promotion'
+import { Auth } from '@/api/login'
 
-export default function PublishedOffersTable() {
+
+interface PublishedOffersTableProps {
+  auth: Auth
+  promotions: PromotionCard[]
+  onDelete: () => void
+}
+
+export default function PublishedOffersTable( {auth,promotions,onDelete}: PublishedOffersTableProps) {
   return (
     <Table className="border border-gray-200 shadow-lg">
       <TableHeader>
@@ -23,8 +32,9 @@ export default function PublishedOffersTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array.from({ length: 7 }, (_, index) => (
-          <PublishedOfferRow key={index} />
+        {promotions &&
+        promotions.map((promotionCard) => (
+          <PublishedOfferRow key={promotionCard.promotion.id} promotionCard={promotionCard} onDelete={onDelete} auth={auth} />
         ))}
       </TableBody>
     </Table>

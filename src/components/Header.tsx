@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ScrollText, Search } from 'lucide-react'
+import { ScrollText, Search, LogOut } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+import Cookies from 'js-cookie' 
 
 import logoImg from '@/assets/logo.jpg'
 import {
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 
 import WishList from './WishList'
+import { Auth } from '@/api/login'
 
 const searchFormSchema = z.object({
   searchField: z.string().min(2),
@@ -21,10 +23,20 @@ const searchFormSchema = z.object({
 type SearchFormData = z.infer<typeof searchFormSchema>
 
 export function Header() {
+  
+  const authString = Cookies.get('auth'); 
+  const auth: Auth | undefined = authString ? JSON.parse(authString) : undefined;
+
+  if (!auth || !auth.token || !auth.userId) {
+    window.location.href = '/sign-in';
+    return null;  
+  }
+  
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate() 
 
-  const isHomePage = location.pathname === '/'
+  const isHomePage = location.pathname === '/home'
 
   const { handleSubmit, register } = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -35,12 +47,15 @@ export function Header() {
 
   function handleSearch({ searchField }: SearchFormData) {
     const params = new URLSearchParams(searchParams)
-
     params.set('promotionName', searchField)
-
     setSearchParams(params)
   }
 
+  function handleLogout() {
+    Cookies.remove('auth')
+    navigate('/')
+  }
+  
   return (
     <div className="flex h-14 w-full items-center justify-center bg-green-600 text-slate-200">
       <div className="flex w-app items-center justify-between">
@@ -81,15 +96,26 @@ export function Header() {
                 <DialogHeader className="flex items-center text-lg">
                   Lista de desejos
                 </DialogHeader>
-                <WishList />
+                <WishList auth={auth} />
               </DialogContent>
             </Dialog>
-            <Link
-              to={`/user/1`}
+
+            {auth && (
+              <Link
+                to={`/user/${auth.userId}`}
+                className="flex items-center rounded-sm border border-slate-200 p-2"
+              >
+                Meu perfil
+              </Link>
+            )}
+
+            <button
+              onClick={handleLogout}
               className="flex items-center rounded-sm border border-slate-200 p-2"
             >
-              Meu perfil
-            </Link>
+              <LogOut size={20} />
+              <span className="ml-2">Sair</span>
+            </button>
           </div>
         </div>
       </div>

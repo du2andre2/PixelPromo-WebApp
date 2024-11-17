@@ -3,40 +3,78 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { PromotionCard } from '@/api/get-promotion'
-import userImg from '@/assets/user-img.jpg'
+import userDefault from '@/assets/user-default.png'
+import { createInteraction } from '@/api/create-interaction'
+import { Auth } from '@/api/login'
 
 interface PromotionProps {
   promotionCard: PromotionCard
+  onDeleteFavoriteItem: () => void
+  auth: Auth
 }
 
-export default function WishListItem({ promotionCard }: PromotionProps) {
+export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}: PromotionProps) {
   const [liked, setLiked] = useState<boolean>(false)
-  const [favorited, setFavorited] = useState<boolean>(false)
+  
   const [likesAmount, setLikesAmount] = useState<number>(
     promotionCard.promotionInteractions?.like || 0,
   )
 
-  function handleFavoritePromotion() {
-    setFavorited(true)
+  async function handleDeleteFavoritePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'favorite',
+        },
+        auth: auth,
+      });
+      onDeleteFavoriteItem()
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+    
   }
 
-  function handleUnfavoritePromotion() {
-    setFavorited(false)
+  async function handleLikePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'like',
+        },
+        auth: auth,
+      });
+      setLiked(true)
+      setLikesAmount(likesAmount + 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+   
   }
 
-  function handleLikePromotion() {
-    setLiked(true)
-    setLikesAmount(likesAmount + 1)
-  }
-
-  function handleUnlikePromotion() {
-    setLiked(false)
-    setLikesAmount(likesAmount - 1)
+  async function handleUnlikePromotion() {
+    try {
+      await createInteraction({
+        interaction: {
+          promotionId: promotionCard.promotion.id || '',
+          userId: auth.userId || '',
+          interactionType: 'like',
+        },
+        auth: auth,
+      });
+      setLiked(false)
+      setLikesAmount(likesAmount - 1)
+    } catch (error) {
+      console.error('Erro ao criar interação:', error);
+    }
+    
   }
 
   useEffect(() => {
     setLiked(promotionCard.promotionUserInteractions?.like || false)
-    setFavorited(promotionCard.promotionUserInteractions?.favorite || false)
     setLikesAmount(promotionCard.promotionInteractions.like)
   }, [promotionCard])
 
@@ -70,11 +108,13 @@ export default function WishListItem({ promotionCard }: PromotionProps) {
             <div className="basis-1/4">{promotionCard.promotion.title}</div>
           </div>
           <div className="mb-2 flex basis-1/5 items-end justify-end">
-            <img
-              src={userImg}
-              alt="Imagem do usuário"
-              className="rounded-full"
-            />
+            <Link to={`/user/${promotionCard.user.id}`} >
+              <img
+                src={promotionCard.user.pictureUrl || userDefault}
+                alt="Imagem do usuário"
+                className="h-8 w-8 object-cover rounded-full"
+              />
+            </Link>
           </div>
         </div>
         <div className="flex basis-1/5 items-center justify-between">
@@ -86,12 +126,8 @@ export default function WishListItem({ promotionCard }: PromotionProps) {
           </p>
           <div className="flex items-center gap-2">
             <button
-              className={` ${
-                favorited ? 'text-red-700' : 'border-slate-200'
-              } transition-colors duration-200`}
-              onClick={
-                favorited ? handleUnfavoritePromotion : handleFavoritePromotion
-              }
+              className='text-red-700 border-slate-200 transition-colors duration-200'
+              onClick={handleDeleteFavoritePromotion}
             >
               <Trash2 size={16} />
             </button>

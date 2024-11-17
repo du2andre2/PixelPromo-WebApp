@@ -5,83 +5,62 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { createPromotion } from '@/api/create-promotion'
+import { Auth } from '@/api/login'
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
 const fileSchema = z
-  .instanceof(File)
-  .optional()
+  .custom<File>((value) => value instanceof File, {
+    message: 'O arquivo deve ser uma instância válida de File',
+  })
   .refine(
-    (file) => {
-      if (!file) return true
-      console.log('Tipo MIME do arquivo:', file.type)
-      return (
-        file.size <= MAX_UPLOAD_SIZE &&
-        ['image/png', 'image/jpeg', 'image/pjpeg'].includes(file.type)
-      )
-    },
+    (file) =>
+      file &&
+      file.size <= MAX_UPLOAD_SIZE &&
+      ['image/png', 'image/jpeg'].includes(file.type),
     {
       message: 'O arquivo deve ser PNG ou JPG e ter no máximo 3MB',
-    },
+    }
   )
 
 const createPromotionSchema = z.object({
   promotionImage: fileSchema,
   gameName: z.string().min(2, 'Nome do jogo é obrigatório'),
-  gamePrice: z.string(),
-  gamePriceWithDiscount: z.string(),
-  gameDiscount: z.string().min(0, 'Desconto deve ser maior ou igual a 0'),
+  gamePrice: z
+    .number({ invalid_type_error: 'O preço deve ser um número' })
+    .positive('O preço deve ser maior que zero'),
+  gamePriceWithDiscount: z
+    .number({ invalid_type_error: 'O preço com desconto deve ser um número' })
+    .positive('O preço com desconto deve ser maior que zero'),
   gamePlatform: z.string().min(2, 'Plataforma é obrigatória'),
   gameURL: z.string().url('URL deve ser válida').min(2, 'URL é obrigatória'),
 })
 
 type CreatePromotionFormData = z.infer<typeof createPromotionSchema>
 
-export default function CreatePromotionDialog() {
-  const { handleSubmit, register, setValue } = useForm<CreatePromotionFormData>(
-    {
-      resolver: zodResolver(createPromotionSchema),
-    },
-  )
+interface CreatePromotionProps {
+  onClose: () => void
+  auth: Auth
+}
+
+export default function CreatePromotionDialog({ onClose, auth }: CreatePromotionProps) {
+  const { handleSubmit, register, setValue, formState: { errors } } = useForm<CreatePromotionFormData>({
+    resolver: zodResolver(createPromotionSchema),
+  })
 
   const { mutateAsync: createPromotionFn } = useMutation({
     mutationFn: createPromotion,
+    onSuccess: () => {
+      onClose()
+    },
   })
 
   const [preview, setPreview] = useState<string | null>(null)
 
-  function formatPrice(event: React.ChangeEvent<HTMLInputElement>) {
-    let value = event.target.value.replace(/\D/g, '')
-
-    if (value.length > 5) {
-      value = value.slice(0, 5)
-    }
-
-    if (value.length >= 4) {
-      value = value.replace(/^(\d{2,3})(\d{2})$/, '$1,$2')
-    }
-
-    setValue(event.target.name as keyof CreatePromotionFormData, value)
-  }
-
-  function formatDiscount(event: React.ChangeEvent<HTMLInputElement>) {
-    let value = event.target.value.replace(/\D/g, '')
-
-    if (value.length > 3) {
-      value = value.slice(0, 3)
-    }
-
-    const numericValue = parseInt(value, 10)
-    if (numericValue > 100) {
-      value = '100'
-    }
-
-    setValue(event.target.name as keyof CreatePromotionFormData, value)
-  }
-
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0] ?? undefined
     if (file) {
+      setValue('promotionImage', file, { shouldValidate: true })
       setPreview(URL.createObjectURL(file))
     } else {
       setPreview(null)
@@ -89,14 +68,21 @@ export default function CreatePromotionDialog() {
   }
 
   async function handleCreatePromotion(data: CreatePromotionFormData) {
+    const promotionData = {
+      userId: auth.userId,
+      title: data.gameName,
+      originalPrice: data.gamePrice,
+      discountedPrice: data.gamePriceWithDiscount,
+      platform: data.gamePlatform,
+      link: data.gameURL,
+      categories: [], // Adicione categorias se necessário
+    }
+
+    console.log('promotionData:', promotionData)
     await createPromotionFn({
-      gameName: data.gameName,
-      gameDiscount: data.gameDiscount,
-      gamePlatform: data.gamePlatform,
-      gamePrice: data.gamePrice,
-      gamePriceWithDiscount: data.gamePriceWithDiscount,
-      gameURL: data.gameURL,
-      promotionImage: data.promotionImage,
+      promotion: promotionData,
+      image: data.promotionImage!,
+      auth: auth
     })
   }
 
@@ -117,12 +103,14 @@ export default function CreatePromotionDialog() {
         )}
         <input
           type="file"
-          {...register('promotionImage')}
           onChange={handleFileChange}
           className="absolute inset-0 cursor-pointer opacity-0"
           required
         />
       </label>
+      {errors.promotionImage && (
+        <p className="text-red-500">{errors.promotionImage.message}</p>
+      )}
       <div className="flex w-full gap-2">
         <div className="flex flex-1 flex-col gap-1">
           <label>Nome do jogo</label>
@@ -135,16 +123,13 @@ export default function CreatePromotionDialog() {
         </div>
         <div className="flex w-28 flex-col gap-1">
           <label>Preço</label>
-          <div className="flex items-center space-x-2 rounded-md bg-gray-700 p-2 focus-within:ring-2 focus-within:ring-slate-200">
-            <span className="text-slate-200">R$</span>
-            <input
-              type="text"
-              className="w-full appearance-none bg-transparent outline-none"
-              {...register('gamePrice')}
-              onChange={formatPrice}
-              required
-            />
-          </div>
+          <input
+            type="number"
+            step="0.01"
+            className="w-full rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            {...register('gamePrice', { valueAsNumber: true })}
+            required
+          />
         </div>
       </div>
       <div className="flex w-full gap-2">
@@ -159,16 +144,13 @@ export default function CreatePromotionDialog() {
         </div>
         <div className="flex w-28 flex-col gap-1">
           <label>Novo preço</label>
-          <div className="flex items-center space-x-2 rounded-md bg-gray-700 p-2 focus-within:ring-2 focus-within:ring-slate-200">
-            <span className="text-slate-200">R$</span>
-            <input
-              type="text"
-              className="w-full appearance-none bg-transparent outline-none"
-              {...register('gamePriceWithDiscount')}
-              onChange={formatPrice}
-              required
-            />
-          </div>
+          <input
+            type="number"
+            step="0.01"
+            className="w-full rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            {...register('gamePriceWithDiscount', { valueAsNumber: true })}
+            required
+          />
         </div>
       </div>
       <div className="flex w-full gap-2">
@@ -181,24 +163,12 @@ export default function CreatePromotionDialog() {
             required
           />
         </div>
-        <div className="flex w-28 flex-col gap-1">
-          <label>Desconto</label>
-          <div className="flex items-center space-x-2 rounded-md bg-gray-700 p-2 focus-within:ring-2 focus-within:ring-slate-200">
-            <input
-              type="text"
-              className="w-full appearance-none bg-transparent outline-none"
-              {...register('gameDiscount')}
-              onChange={formatDiscount}
-              required
-            />
-            <span className="text-slate-200">%</span>
-          </div>
-        </div>
       </div>
       <div className="mt-2 flex w-full gap-4">
         <button
           type="button"
           className="w-full rounded-md bg-red-500 py-2 text-white hover:bg-red-700"
+          onClick={onClose}
         >
           Cancelar
         </button>

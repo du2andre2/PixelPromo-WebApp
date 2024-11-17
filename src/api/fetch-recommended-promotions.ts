@@ -6,26 +6,45 @@ import type {
 } from './get-interaction'
 import type { Promotion, PromotionCard } from './get-promotion'
 import type { User } from './get-user'
+import { Auth } from './login'
 
-export async function fetchRecommendedPromotions(): Promise<PromotionCard[]> {
-  const response = await api.get<Promotion[]>('/promotions', {
+
+export interface fetchRecommendedPromotionsProps {
+  auth: Auth
+}
+
+export async function fetchRecommendedPromotions({auth}:fetchRecommendedPromotionsProps): Promise<PromotionCard[]> {
+  const response = await api.get<Promotion[]>('/promotions', { 
     params: {
       limit: 6,
     },
+    headers: {
+      Authorization: `Bearer ${auth.token}`,
+    },
   })
-
-  const userID = '1' // TODO: obter ID do usuário autenticado
 
   const promotionCards = await Promise.all(
     response.data.map(async (promotion) => {
       const [userResponse, interactionsResponse, userInteractionsResponse] =
         await Promise.all([
-          api.get<User>(`/users/${promotion.userId}`),
+          api.get<User>(`/users/${promotion.userId}`,{
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }),
           api.get<PromotionInteractionsStatistics>(
-            `/interactions/statistics/${promotion.id}`,
+            `/interactions/statistics/${promotion.id}`,{
+              headers: {
+                Authorization: `Bearer ${auth.token}`,
+              },
+            },
           ),
           api.get<PromotionUserInteractionsStatistics>(
-            `/interactions/promotion-user-statistics?userID=${userID}&promotionID=${promotion.id}`,
+            `/interactions/promotion-user-statistics?userId=${auth.userId}&promotionId=${promotion.id}`,{
+              headers: {
+                Authorization: `Bearer ${auth.token}`,
+              },
+            },
           ),
         ])
 

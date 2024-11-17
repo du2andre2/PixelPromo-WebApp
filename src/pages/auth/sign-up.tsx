@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
+import Cookies from 'js-cookie'
+import { createUser } from '@/api/create-user'
 
 const signUpFormSchema = z
   .object({
@@ -33,8 +35,19 @@ export default function SignUp() {
     },
   })
 
-  function handleRegister(data: SignUpFormData) {
-    console.log(data)
+  const auth = Cookies.get('auth');
+  if (auth) {
+    window.location.href = '/home'; 
+    return null;
+  }
+
+  async function handleRegister(data: SignUpFormData) {
+    try {
+      await createUser({ user: data });
+      window.location.href = '/sign-in'; 
+    } catch (error) {
+      console.error("Error during signup:", error);
+    }
   }
 
   return (
@@ -54,7 +67,7 @@ export default function SignUp() {
             </Button>
 
             <a
-              href="/sign-in"
+              href="/"
               className="w-1/2 py-2 text-center text-gray-400 focus:outline-none"
             >
               Entrar
