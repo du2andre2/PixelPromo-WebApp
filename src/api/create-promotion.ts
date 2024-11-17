@@ -29,6 +29,7 @@ export async function createPromotion({
   await api.post(`/promotions/image/${response.data.id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${auth.token}`,
     },
   })
 }

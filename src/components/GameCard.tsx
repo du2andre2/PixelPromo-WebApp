@@ -2,6 +2,7 @@ import { ExternalLink, Heart, ThumbsUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import userDefault from '@/assets/user-default.png'
+import gameDefault from '@/assets/game-default.png'
 
 import type { PromotionCard } from '@/api/get-promotion'
 import { createInteraction } from '@/api/create-interaction'
@@ -112,7 +113,7 @@ export default function GameCard({ promotionCard,auth }: PromotionProps) {
         to={`/promotion/${promotionCard.promotion.id}`}
       >
         <img
-          src={promotionCard.promotion.imageUrl}
+          src={promotionCard.promotion.imageUrl || gameDefault}
           alt="Imagem do jogo"
           className="w-42 h-20 object-cover"
         />

@@ -1,13 +1,20 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-import { createPromotion } from '@/api/create-promotion'
-import { Auth } from '@/api/login'
+import { createPromotion } from '@/api/create-promotion';
+import { Auth } from '@/api/login';
+import { fetchCategories } from '@/api/fetch-categories';
 
-const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
 
 const fileSchema = z
   .custom<File>((value) => value instanceof File, {
@@ -21,7 +28,7 @@ const fileSchema = z
     {
       message: 'O arquivo deve ser PNG ou JPG e ter no máximo 3MB',
     }
-  )
+  );
 
 const createPromotionSchema = z.object({
   promotionImage: fileSchema,
@@ -34,40 +41,61 @@ const createPromotionSchema = z.object({
     .positive('O preço com desconto deve ser maior que zero'),
   gamePlatform: z.string().min(2, 'Plataforma é obrigatória'),
   gameURL: z.string().url('URL deve ser válida').min(2, 'URL é obrigatória'),
-})
+  categories: z.array(z.string()).min(1, 'Selecione pelo menos uma categoria.'),
+});
 
-type CreatePromotionFormData = z.infer<typeof createPromotionSchema>
+type CreatePromotionFormData = z.infer<typeof createPromotionSchema>;
 
 interface CreatePromotionProps {
-  onClose: () => void
-  auth: Auth
+  onClose: () => void;
+  auth: Auth;
 }
 
 export default function CreatePromotionDialog({ onClose, auth }: CreatePromotionProps) {
   const { handleSubmit, register, setValue, formState: { errors } } = useForm<CreatePromotionFormData>({
     resolver: zodResolver(createPromotionSchema),
-  })
+  });
+
+  const { data: categoriesQuery } = useQuery({
+    queryKey: ['categoriesQuery'],
+    queryFn: () => fetchCategories({ auth: auth }),
+  });
 
   const { mutateAsync: createPromotionFn } = useMutation({
     mutationFn: createPromotion,
     onSuccess: () => {
-      onClose()
+      onClose();
     },
-  })
+  });
 
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? undefined
+    const file = event.target.files?.[0] ?? undefined;
     if (file) {
-      setValue('promotionImage', file, { shouldValidate: true })
-      setPreview(URL.createObjectURL(file))
+      setValue('promotionImage', file, { shouldValidate: true });
+      setPreview(URL.createObjectURL(file));
     } else {
-      setPreview(null)
+      setPreview(null);
     }
   }
 
+  function handleCategoryChange(categoryName: string, isChecked: boolean) {
+    setSelectedCategories((prev) => {
+      const updatedCategories = isChecked
+        ? [...prev, categoryName]
+        : prev.filter((cat) => cat !== categoryName);
+  
+      setValue('categories', updatedCategories, { shouldValidate: true });
+      return updatedCategories;
+    });
+  }
+
   async function handleCreatePromotion(data: CreatePromotionFormData) {
+  
+    console.log('data', data);
+
     const promotionData = {
       userId: auth.userId,
       title: data.gameName,
@@ -75,16 +103,21 @@ export default function CreatePromotionDialog({ onClose, auth }: CreatePromotion
       discountedPrice: data.gamePriceWithDiscount,
       platform: data.gamePlatform,
       link: data.gameURL,
-      categories: [], // Adicione categorias se necessário
-    }
-
-    console.log('promotionData:', promotionData)
-    await createPromotionFn({
-      promotion: promotionData,
-      image: data.promotionImage!,
-      auth: auth
-    })
+      categories: selectedCategories,
+    };
+  
+    try {
+      await createPromotionFn({
+        promotion: promotionData,
+        image: data.promotionImage!,
+        auth: auth,
+      });
+      console.log('Promoção cadastrada com sucesso!');
+    } catch (error) {
+      console.log('Erro ao cadastrar promoção. Verifique os dados e tente novamente.');
+    } 
   }
+  
 
   return (
     <form
@@ -111,6 +144,7 @@ export default function CreatePromotionDialog({ onClose, auth }: CreatePromotion
       {errors.promotionImage && (
         <p className="text-red-500">{errors.promotionImage.message}</p>
       )}
+
       <div className="flex w-full gap-2">
         <div className="flex flex-1 flex-col gap-1">
           <label>Nome do jogo</label>
@@ -132,6 +166,7 @@ export default function CreatePromotionDialog({ onClose, auth }: CreatePromotion
           />
         </div>
       </div>
+
       <div className="flex w-full gap-2">
         <div className="flex flex-1 flex-col gap-1">
           <label>Plataforma</label>
@@ -153,6 +188,7 @@ export default function CreatePromotionDialog({ onClose, auth }: CreatePromotion
           />
         </div>
       </div>
+
       <div className="flex w-full gap-2">
         <div className="flex flex-1 flex-col gap-1">
           <label>URL da promoção</label>
@@ -164,6 +200,42 @@ export default function CreatePromotionDialog({ onClose, auth }: CreatePromotion
           />
         </div>
       </div>
+
+      <div className="flex w-full gap-2">
+        <div className="flex flex-1 flex-col gap-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="rounded-md bg-gray-700 p-2 focus:outline-none focus:ring-2 focus:ring-slate-200">
+                Categorias
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="p-4">
+              <DropdownMenuSeparator />
+              {categoriesQuery?.map((category) => (
+                <div
+                  key={category.name}
+                  className="flex items-center gap-2 px-2 py-1"
+                >
+                  <input
+                    type="checkbox"
+                    value={category.name}
+                    checked={selectedCategories.includes(category.name)}
+                    onChange={(e) => handleCategoryChange(category.name, e.target.checked)}
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                  />
+                  <label className="text-sm text-gray-800">
+                    {category.name}
+                  </label>
+                </div>
+              )) || <p className="text-sm text-gray-400">Nenhuma categoria disponível.</p>}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+        {errors.categories && (
+          <p className="text-red-500">{errors.categories.message}</p>
+        )}
+
       <div className="mt-2 flex w-full gap-4">
         <button
           type="button"
@@ -180,5 +252,5 @@ export default function CreatePromotionDialog({ onClose, auth }: CreatePromotion
         </button>
       </div>
     </form>
-  )
+  );
 }

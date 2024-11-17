@@ -1,24 +1,28 @@
-import { ExternalLink, ThumbsUp, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { ExternalLink, ThumbsUp, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
-import type { PromotionCard } from '@/api/get-promotion'
-import userDefault from '@/assets/user-default.png'
-import { createInteraction } from '@/api/create-interaction'
-import { Auth } from '@/api/login'
+import type { PromotionCard } from '@/api/get-promotion';
+import userDefault from '@/assets/user-default.png';
+import gameDefault from '@/assets/game-default.png';
+import { createInteraction } from '@/api/create-interaction';
+import { Auth } from '@/api/login';
 
 interface PromotionProps {
-  promotionCard: PromotionCard
-  onDeleteFavoriteItem: () => void
-  auth: Auth
+  promotionCard: PromotionCard;
+  onDeleteFavoriteItem: () => void;
+  auth: Auth;
 }
 
-export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}: PromotionProps) {
-  const [liked, setLiked] = useState<boolean>(false)
-  
-  const [likesAmount, setLikesAmount] = useState<number>(
-    promotionCard.promotionInteractions?.like || 0,
-  )
+export default function WishListItem({
+  promotionCard,
+  onDeleteFavoriteItem,
+  auth,
+}: PromotionProps) {
+  const [interactions, setInteractions] = useState({
+    liked: promotionCard.promotionUserInteractions?.like || false,
+    likesAmount: promotionCard.promotionInteractions.like,
+  });
 
   async function handleDeleteFavoritePromotion() {
     try {
@@ -30,11 +34,10 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
         },
         auth: auth,
       });
-      onDeleteFavoriteItem()
+      onDeleteFavoriteItem();
     } catch (error) {
       console.error('Erro ao criar interação:', error);
     }
-    
   }
 
   async function handleLikePromotion() {
@@ -47,12 +50,13 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
         },
         auth: auth,
       });
-      setLiked(true)
-      setLikesAmount(likesAmount + 1)
+      setInteractions({
+        liked: true,
+        likesAmount: interactions.likesAmount + 1,
+      });
     } catch (error) {
       console.error('Erro ao criar interação:', error);
     }
-   
   }
 
   async function handleUnlikePromotion() {
@@ -65,18 +69,14 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
         },
         auth: auth,
       });
-      setLiked(false)
-      setLikesAmount(likesAmount - 1)
+      setInteractions({
+        liked: false,
+        likesAmount: interactions.likesAmount - 1,
+      });
     } catch (error) {
       console.error('Erro ao criar interação:', error);
     }
-    
   }
-
-  useEffect(() => {
-    setLiked(promotionCard.promotionUserInteractions?.like || false)
-    setLikesAmount(promotionCard.promotionInteractions.like)
-  }, [promotionCard])
 
   return (
     <div className="flex h-32 w-full justify-between rounded-sm border border-gray-700 bg-gray-800">
@@ -85,7 +85,7 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
         to={`/promotion/${promotionCard.promotion.id}`}
       >
         <img
-          src={promotionCard.promotion.imageUrl}
+          src={promotionCard.promotion.imageUrl || gameDefault}
           alt="Imagem do jogo"
           className="h-24 object-cover"
         />
@@ -108,7 +108,7 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
             <div className="basis-1/4">{promotionCard.promotion.title}</div>
           </div>
           <div className="mb-2 flex basis-1/5 items-end justify-end">
-            <Link to={`/user/${promotionCard.user.id}`} >
+            <Link to={`/user/${promotionCard.user.id}`}>
               <img
                 src={promotionCard.user.pictureUrl || userDefault}
                 alt="Imagem do usuário"
@@ -126,7 +126,7 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
           </p>
           <div className="flex items-center gap-2">
             <button
-              className='text-red-700 border-slate-200 transition-colors duration-200'
+              className="text-red-700 border-slate-200 transition-colors duration-200"
               onClick={handleDeleteFavoritePromotion}
             >
               <Trash2 size={16} />
@@ -134,16 +134,20 @@ export default function WishListItem({ promotionCard ,onDeleteFavoriteItem,auth}
 
             <button
               className={`flex items-center gap-1 rounded-sm border px-1 text-sm ${
-                liked ? 'border-blue-700 text-blue-700' : 'border-slate-200'
+                interactions.liked
+                  ? 'border-blue-700 text-blue-700'
+                  : 'border-slate-200'
               } transition-colors duration-200`}
-              onClick={liked ? handleUnlikePromotion : handleLikePromotion}
+              onClick={
+                interactions.liked ? handleUnlikePromotion : handleLikePromotion
+              }
             >
-              {likesAmount}
+              {interactions.likesAmount}
               <ThumbsUp size={16} className="pb-0.5" />
             </button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

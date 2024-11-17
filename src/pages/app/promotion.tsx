@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import userDefault from '@/assets/user-default.png'
+import gameDefault from '@/assets/game-default.png'
 
 import { fetchPromotionComments } from '@/api/fetch-promotion-comments'
 import { fetchRecommendedPromotions } from '@/api/fetch-recommended-promotions'
@@ -183,7 +184,7 @@ export default function Promotion() {
           <div className="flex rounded-sm border border-gray-700 bg-gray-800 px-6">
             <div className="flex basis-1/4 items-center justify-center border-r border-gray-900 p-4">
               <img
-                src={promotionCard?.promotion?.imageUrl || ''}
+                src={promotionCard?.promotion?.imageUrl || gameDefault}
                 alt="imagem do jogo"
                 className="h-40 rounded-md object-cover"
               />
