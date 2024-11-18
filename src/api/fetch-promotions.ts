@@ -28,7 +28,7 @@ export async function fetchPromotions({
     },
     params: {
       category,
-      title: search,
+      search,
       userId,
     },
     paramsSerializer: (params) => {

@@ -1,8 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ScrollText, Search, LogOut } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom'
-import { z } from 'zod'
+import { ScrollText, LogOut } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie' 
 
 import logoImg from '@/assets/logo.jpg'
@@ -16,12 +13,6 @@ import {
 import WishList from './WishList'
 import { Auth } from '@/api/login'
 
-const searchFormSchema = z.object({
-  searchField: z.string().min(2),
-})
-
-type SearchFormData = z.infer<typeof searchFormSchema>
-
 export function Header() {
   
   const authString = Cookies.get('auth'); 
@@ -31,25 +22,7 @@ export function Header() {
     window.location.href = '/sign-in';
     return null;  
   }
-  
-  const location = useLocation()
-  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate() 
-
-  const isHomePage = location.pathname === '/home'
-
-  const { handleSubmit, register } = useForm<SearchFormData>({
-    resolver: zodResolver(searchFormSchema),
-    defaultValues: {
-      searchField: '',
-    },
-  })
-
-  function handleSearch({ searchField }: SearchFormData) {
-    const params = new URLSearchParams(searchParams)
-    params.set('promotionName', searchField)
-    setSearchParams(params)
-  }
 
   function handleLogout() {
     Cookies.remove('auth')
@@ -67,23 +40,6 @@ export function Header() {
         </Link>
 
         <div className="flex h-full items-center gap-12">
-          {isHomePage && (
-            <div className="flex h-10 w-96 items-center rounded-sm border border-slate-200 px-2 py-1">
-              <form
-                onSubmit={handleSubmit(handleSearch)}
-                className="flex w-full items-center gap-2"
-              >
-                <button type="submit">
-                  <Search size={20} />
-                </button>
-                <input
-                  {...register('searchField')}
-                  placeholder="O que você procura?"
-                  className="flex w-full bg-transparent text-slate-200 placeholder-slate-200 outline-none focus:ring-0"
-                />
-              </form>
-            </div>
-          )}
 
           <div className="flex h-full items-center gap-6">
             <Dialog>
