@@ -4,8 +4,6 @@ import { z } from "zod";
 import { createUser, UserProps } from "../api/users";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 const signupFormSchema = z.object({
   name: z.string().nonempty("O nome é obrigatório"),
@@ -20,12 +18,10 @@ export default function SignupForm() {
     resolver: zodResolver(signupFormSchema),
   });
 
-  const router = useRouter();
 
   async function handleSignup(data: UserProps) {
     try {
       await createUser(data);
-      router.push("/");
     } catch (error) {
       console.error("Error during signup:", error);
     }
@@ -43,9 +39,9 @@ export default function SignupForm() {
         >
           Criar Conta
         </button>
-        <Link href="/" className="text-gray-400 py-2 w-1/2 text-center focus:outline-none">
+        <a href="/" className="text-gray-400 py-2 w-1/2 text-center focus:outline-none">
           Entrar
-        </Link>
+        </a>
       </div>
       <input
         {...register("name")}

@@ -29,7 +29,8 @@ const handler = NextAuth({
           }
 
           const responseJson = response.data;
-          cookies().set("token", responseJson.token);
+          const cookieStore = await cookies(); 
+          cookieStore.set("token", responseJson.token);
           return { 
             id: responseJson.user.id,
             name: responseJson.user.name,

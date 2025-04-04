@@ -5,7 +5,6 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 
 const loginFormSchema = z.object({
   email: z.string().email("Insira um email válido"),
@@ -39,9 +38,9 @@ export default function SigninForm() {
       className="flex flex-col gap-4 p-6 bg-gray-800 rounded-md w-96 mx-auto mt-10 text-white"
     >
       <div className="flex justify-between mb-4 border-b border-gray-700">
-        <Link href="/signup" className="text-gray-400 py-2 w-1/2 text-center focus:outline-none">
+        <a href="/signup" className="text-gray-400 py-2 w-1/2 text-center focus:outline-none">
           Criar Conta
-        </Link>
+        </a>
           
         <button
           type="button"

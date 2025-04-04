@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from '@tanstack/react-query'
-import { Filter, Search, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Filter, Search } from 'lucide-react'
+import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useSearchParams } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'

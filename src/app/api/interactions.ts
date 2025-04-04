@@ -13,17 +13,18 @@ export interface PromotionInteractionProps {
 
 export type InteractionType = 'favorite' | 'like' | 'comment' | 'create';
 
-const getAuthHeaders = () => {
-    const token = cookies().get("token");
+const getAuthHeaders = async () => {
+    const cookieStore = await cookies(); // Aguarde a resolução da Promise
+    const token = cookieStore.get("token"); // Agora pode acessar .get()
+    
     return {
         Authorization: `Bearer ${token?.value}`,
     };
 };
-
 export async function createInteraction(interaction: PromotionInteractionProps) {
     try {
         const response = await api.post("/interactions", interaction, {
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
         });
         if (response.status !== 201) {
             console.log(response);
@@ -41,7 +42,7 @@ export async function createInteraction(interaction: PromotionInteractionProps) 
 export async function getCommentsByPromotionId(promotionId: string) {
     try {
         const response = await api.get<PromotionInteractionProps[]>(`/interactions/comments/${promotionId}`, {
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
         });
         if (response.status !== 200) {
             console.log(response);
@@ -59,7 +60,7 @@ export async function getCommentsByPromotionId(promotionId: string) {
 export async function getInteractionStatisticsByPromotionId(promotionId: string) {
     try {
         const response = await api.get(`/interactions/statistics/${promotionId}`, {
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
         });
         if (response.status !== 200) {
             console.log(response);

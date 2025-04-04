@@ -20,8 +20,10 @@ export interface CategoryProps {
     name: string;
 }
 
-const getAuthHeaders = () => {
-    const token = cookies().get("token");
+const getAuthHeaders = async () => {
+    const cookieStore = await cookies(); // Aguarde a resolução da Promise
+    const token = cookieStore.get("token"); // Agora pode acessar .get()
+    
     return {
         Authorization: `Bearer ${token?.value}`,
     };
@@ -30,7 +32,7 @@ const getAuthHeaders = () => {
 export async function createPromotion(promotion: PromotionProps) {
     try {
         const response = await api.post("/promotions", promotion, {
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
         });
         if (response.status !== 201) {
             console.log(response);
@@ -54,11 +56,11 @@ export async function updatePromotionImage({ id, imageFile }: UpdatePromotionIma
     try {
         const formData = new FormData();
         formData.append("image", imageFile);
-
+        const auth = await getAuthHeaders()
         const response = await api.post(`/promotions/image/${id}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                ...getAuthHeaders(),
+                ...auth,
             },
         });
 
@@ -87,7 +89,7 @@ export async function getPromotions(categories?: string[], search?: string) {
         }
 
         const response = await api.get<PromotionProps[]>(`/promotions?${params.toString()}`, {
-            headers: getAuthHeaders(),
+            headers:await getAuthHeaders(),
         });
         if (response.status !== 200) {
             console.log(response);
@@ -106,7 +108,7 @@ export async function getPromotions(categories?: string[], search?: string) {
 export async function getPromotionById(id: string) {
     try {
         const response = await api.get<PromotionProps>(`/promotions/${id}`, {
-            headers: getAuthHeaders(),
+            headers:await getAuthHeaders(),
         });
         if (response.status !== 200) {
             console.log(response);
@@ -125,7 +127,7 @@ export async function getPromotionById(id: string) {
 export async function getFavoritesPromotionsByUserId(userId: string) {
     try {
         const response = await api.get<PromotionProps[]>(`/promotions/favorites/${userId}`, {
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
         });
         if (response.status !== 200) {
             console.log(response);
@@ -144,7 +146,7 @@ export async function getFavoritesPromotionsByUserId(userId: string) {
 export async function getCategories() {
     try {
         const response = await api.get<CategoryProps[]>("/categories", {
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
         });
         if (response.status !== 200) {
             console.log(response);
